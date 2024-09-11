@@ -58,7 +58,8 @@ export function CreatePost() {
   }, []);
 
   const createNewPost = async () => {
-    if (!user || !user.id || !content) return;
+    if (!user?.id || !content) return;
+
     const postData: Post = {
       content,
       author: user?.fullName || (user?.username ?? "Anônimo"),
@@ -72,12 +73,16 @@ export function CreatePost() {
   const { mutateAsync: handleCreatePost, isPending: publishing } = useMutation({
     mutationFn: createNewPost,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["totalOfPosts"] });
       router.push(pathname + "?" + createQueryString("page", (1).toString()));
       setOpen(false);
       setContent("");
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["posts", user?.id] });
+        queryClient.invalidateQueries({ queryKey: ["totalOfPosts"] });
+      }, 1000);
     },
+    retry: 3,
+    retryDelay: 1000,
   });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {

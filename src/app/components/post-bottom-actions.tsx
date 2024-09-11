@@ -28,7 +28,7 @@ export function PostBottomActions({
   );
 
   const handleToggleLike = async () => {
-    if (!user || !user.id || liking || !post.id) return;
+    if (!user?.id || liking || !post.id) return;
 
     setLiking(true);
 

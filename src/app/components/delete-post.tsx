@@ -23,7 +23,7 @@ export function DeletePost({ postId }: DeletePostProps) {
   const [open, setOpen] = useState(false);
   const { mutateAsync: handleDeletePost, isPending: deleting } = useMutation({
     mutationFn: async () => {
-      if (!user || !user.id || !postId) return;
+      if (!user?.id || !postId) return;
       await deletePost(postId);
     },
     onSuccess: () => {
@@ -54,7 +54,7 @@ export function DeletePost({ postId }: DeletePostProps) {
           <span>Excluir</span>
         </Button>
 
-        <DialogContent>
+        <DialogContent className="bg-card">
           <DialogHeader>
             <DialogTitle>Confirmação</DialogTitle>
           </DialogHeader>
