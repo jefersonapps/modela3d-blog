@@ -68,6 +68,7 @@ export function UpdatePostDialog({
           modelValue={newContent}
           onChange={(value) => setNewContent(value)}
           theme={theme}
+          autoFocus
           language="pt-br"
           className="rounded-md"
           toolbarsExclude={[

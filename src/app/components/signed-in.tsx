@@ -17,13 +17,9 @@ import { SignOut } from "phosphor-react";
 import { Button } from "@/components/ui/button";
 
 export const CustomUserButton = () => {
-  const { isLoaded, user } = useUser();
+  const { user } = useUser();
   const { signOut, openUserProfile } = useClerk();
   const router = useRouter();
-
-  if (!isLoaded) return null;
-
-  if (!user?.id) return null;
 
   return (
     <DropdownMenu>
@@ -34,13 +30,17 @@ export const CustomUserButton = () => {
               ? user.fullName
               : user?.primaryEmailAddress?.emailAddress}
           </span>
-          <Image
-            alt={user?.primaryEmailAddress?.emailAddress ?? "Perfil"}
-            src={user?.imageUrl}
-            width={30}
-            height={30}
-            className="rounded-full"
-          />
+          {user?.imageUrl ? (
+            <Image
+              alt={user?.primaryEmailAddress?.emailAddress ?? "Perfil"}
+              src={user?.imageUrl}
+              width={30}
+              height={30}
+              className="rounded-full"
+            />
+          ) : (
+            <UserCircle className="size-[30px]" />
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuPortal>

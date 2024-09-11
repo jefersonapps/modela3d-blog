@@ -62,7 +62,7 @@ export function CreatePost() {
     const postData: Post = {
       content,
       author: user?.fullName || (user?.username ?? "Anônimo"),
-      authorId: user?.id,
+      authorId: user.id,
       slug: slugifySentences(user.username + content.slice(0, 10)),
       userImageUrl: user?.imageUrl,
     };
@@ -72,11 +72,11 @@ export function CreatePost() {
   const { mutateAsync: handleCreatePost, isPending: publishing } = useMutation({
     mutationFn: createNewPost,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts", user?.id] });
       queryClient.invalidateQueries({ queryKey: ["totalOfPosts"] });
+      router.push(pathname + "?" + createQueryString("page", (1).toString()));
       setOpen(false);
       setContent("");
-      router.push(pathname + "?" + createQueryString("page", (1).toString()));
     },
   });
 
@@ -123,6 +123,7 @@ export function CreatePost() {
                   <MdEditor
                     modelValue={content}
                     onChange={onChangeContent}
+                    autoFocus
                     toolbarsExclude={[
                       "image",
                       "link",
