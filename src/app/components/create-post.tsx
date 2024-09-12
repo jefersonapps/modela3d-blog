@@ -3,12 +3,10 @@ import { useState, useCallback, FormEvent } from "react";
 import "easymde/dist/easymde.min.css";
 import { slugifySentences } from "@/app/utils/helpers";
 import { useUser } from "@clerk/nextjs";
-import { MdEditor, config } from "md-editor-rt";
-import "md-editor-rt/lib/style.css";
-import PT_BR from "../utils/locale/pt-br";
+
 import Image from "next/image";
 import { Post } from "../db/actions";
-import { useCurrentTheme } from "../hooks/use-current-theme";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,20 +21,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPost } from "../http/create-post";
 import { Card } from "@/components/ui/card";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
-config({
-  editorConfig: {
-    languageUserDefined: {
-      "pt-br": PT_BR,
-    },
-  },
-});
+import { MarkdownEditor } from "./markdown-editor";
 
 export function CreatePost() {
   const { isLoaded, user } = useUser();
   const [content, setContent] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
-  const theme = useCurrentTheme();
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -117,7 +108,7 @@ export function CreatePost() {
                 </button>
               </DialogTrigger>
 
-              <DialogContent className="sm:max-w-full md:max-w-6xl w-full bg-card">
+              <DialogContent className="sm:max-w-full md:max-w-6xl w-full bg-card p-3 md:p-4">
                 <DialogHeader>
                   <DialogTitle>Nova Postagem</DialogTitle>
                 </DialogHeader>
@@ -125,25 +116,10 @@ export function CreatePost() {
                   className="flex flex-col w-full space-y-4"
                   onSubmit={handleSubmit}
                 >
-                  <MdEditor
-                    modelValue={content}
-                    onChange={onChangeContent}
-                    autoFocus
-                    toolbarsExclude={[
-                      "image",
-                      "link",
-                      "save",
-                      "fullscreen",
-                      "pageFullscreen",
-                      "catalog",
-                      "htmlPreview",
-                      "github",
-                    ]}
-                    theme={theme}
-                    language="pt-br"
-                    className="rounded-md"
+                  <MarkdownEditor
+                    content={content}
+                    onChangeContent={onChangeContent}
                   />
-
                   <DialogFooter>
                     <Button
                       type="submit"

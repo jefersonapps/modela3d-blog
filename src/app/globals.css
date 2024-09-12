@@ -114,3 +114,15 @@ body {
 .cl-internal-1j7ahlv {
   margin: 6px 8px !important;
 }
+
+.md-editor-footer {
+  height: fit-content !important;
+}
+
+.md-editor-footer-left > .md-editor-footer-item > span {
+  text-wrap: nowrap !important;
+}
+
+.md-editor-footer-left > .md-editor-footer-item > .md-editor-footer-label {
+  text-align: left !important;
+}
