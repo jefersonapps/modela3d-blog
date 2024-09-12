@@ -28,8 +28,8 @@ export const CustomUserButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="py-6 px-4 flex items-center gap-4">
-          <span className="font-semibold text-base">
+        <Button variant="ghost" className="py-6 px-4 flex items-center gap-4">
+          <span className="font-semibold text-base hidden md:block truncate">
             {user?.fullName
               ? user.fullName
               : user?.primaryEmailAddress?.emailAddress}
