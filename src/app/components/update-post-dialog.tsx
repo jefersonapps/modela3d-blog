@@ -47,7 +47,7 @@ export function UpdatePostDialog({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-full md:max-w-6xl w-full bg-card">
+      <DialogContent className="sm:max-w-full md:max-w-6xl w-full bg-card p-3 md:p-4">
         <DialogHeader>
           <DialogTitle>Editar Postagem</DialogTitle>
         </DialogHeader>

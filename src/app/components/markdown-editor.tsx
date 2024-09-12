@@ -23,12 +23,15 @@ export function MarkdownEditor({
 }: MarkdownEditorProps) {
   const theme = useCurrentTheme();
 
-  const { isMobile, deviceWidth } = useScreenDetector();
+  const { isMobile, deviceWidth, deviceHeight } = useScreenDetector();
 
   return (
     <div
       className="w-full overflow-x-auto"
-      style={{ maxWidth: isMobile ? deviceWidth - 26 : "" }}
+      style={{
+        maxWidth: isMobile ? deviceWidth - 26 : "",
+        height: !isMobile ? deviceHeight - 300 : "",
+      }}
     >
       <MdEditor
         modelValue={content}
@@ -46,7 +49,7 @@ export function MarkdownEditor({
         ]}
         theme={theme}
         language="pt-br"
-        className="rounded-md"
+        className="rounded-md !h-64 md:!h-full"
       />
     </div>
   );
