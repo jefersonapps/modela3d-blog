@@ -54,7 +54,7 @@ export function DeletePost({ postId }: DeletePostProps) {
           <span>Excluir</span>
         </Button>
 
-        <DialogContent className="bg-card">
+        <DialogContent className="bg-card w-[90%] md-w-auto rounded-md">
           <DialogHeader>
             <DialogTitle>Confirmação</DialogTitle>
           </DialogHeader>
@@ -64,7 +64,7 @@ export function DeletePost({ postId }: DeletePostProps) {
             pode ser desfeita.
           </p>
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button
               variant="destructive"
               onClick={confirmDelete}
@@ -78,7 +78,11 @@ export function DeletePost({ postId }: DeletePostProps) {
               )}
               Excluir
             </Button>
-            <Button variant="secondary" onClick={() => setOpen(false)}>
+            <Button
+              className="!ml-0"
+              variant="secondary"
+              onClick={() => setOpen(false)}
+            >
               Cancelar
             </Button>
           </DialogFooter>

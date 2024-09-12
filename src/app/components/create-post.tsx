@@ -108,7 +108,7 @@ export function CreatePost() {
                 </button>
               </DialogTrigger>
 
-              <DialogContent className="sm:max-w-full md:max-w-6xl w-full bg-card p-3 md:p-4">
+              <DialogContent className="w-full md:max-w-6xl bg-card p-3 md:p-4 rounded-md">
                 <DialogHeader>
                   <DialogTitle>Nova Postagem</DialogTitle>
                 </DialogHeader>
