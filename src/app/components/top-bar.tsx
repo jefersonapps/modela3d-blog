@@ -12,7 +12,7 @@ export function TopBar() {
     <nav className="w-full py-4 border-b-[1px] mb-4 text-center flex items-center justify-between sticky top-0 bg-card z-10 ">
       <Link
         href="/"
-        className="flex gap-4 items-center text-xl font-extrabold text-primary"
+        className="flex gap-4 items-center text-lg md:text-xl font-extrabold text-primary"
       >
         <Image width={40} src={logo} alt="Logo do Modela 3D" /> Modela 3D | Blog
       </Link>
