@@ -18,6 +18,7 @@ import z from "zod";
 import { useCallback } from "react";
 import { getTotalOfPosts } from "../http/get-total-of-posts";
 import { PaginationControls } from "./list-posts/pagination-controls";
+import { createUser } from "../http/create-user";
 
 const perPage = 10;
 
@@ -66,6 +67,13 @@ export function ListPosts() {
     staleTime: Infinity,
   });
 
+  useQuery({
+    queryKey: ["user"],
+    queryFn: () => createUser(user?.fullName, user?.id),
+    enabled: !!user?.id && isLoaded,
+    staleTime: Infinity,
+  });
+
   const {
     data: postsForUnauthenticatedUser,
     isLoading: isLoadingUnauthenticatedPosts,
@@ -80,6 +88,8 @@ export function ListPosts() {
   const lastPage = Math.ceil(
     (totalOfPosts && totalOfPosts[0].count / perPage) || 1
   );
+
+  if (!posts && !postsForUnauthenticatedUser) return null;
 
   return (
     <div className="space-y-4">

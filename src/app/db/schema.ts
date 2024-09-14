@@ -17,3 +17,14 @@ export const postsTable = pgTable("posts", {
     .defaultNow(),
   slug: text("slug").notNull(),
 });
+
+export const usersTable = pgTable("users", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  user_name: text("user_name").notNull(),
+  user_id: text("user_id").notNull(),
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});

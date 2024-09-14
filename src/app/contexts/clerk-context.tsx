@@ -16,6 +16,8 @@ export function ThemedClerkProvider({ children }: { children: ReactNode }) {
 
   return (
     <ClerkProvider
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
       localization={ptBR}
       appearance={{
         baseTheme: resolvedTheme === "dark" ? dark : undefined,

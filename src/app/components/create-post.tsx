@@ -17,11 +17,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/spinner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createPost } from "../http/create-post";
 import { Card } from "@/components/ui/card";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MarkdownEditor } from "./markdown-editor";
+import { getUser } from "../http/get-user";
 
 export function CreatePost() {
   const { isLoaded, user } = useUser();
@@ -48,12 +49,25 @@ export function CreatePost() {
     setContent(value);
   }, []);
 
+  const { data: userData, isLoading: isLoadingUser } = useQuery({
+    queryKey: ["username"],
+    queryFn: () => getUser({ userId: user?.id }),
+    enabled: !!user?.id && isLoaded,
+    staleTime: Infinity,
+  });
+
+  const displayName =
+    (userData ? userData[0]?.userName : undefined) ??
+    user?.fullName ??
+    user?.primaryEmailAddress?.emailAddress ??
+    "Anônimo";
+
   const createNewPost = async () => {
-    if (!user?.id || !content) return;
+    if (!user?.id || !content || isLoadingUser) return;
 
     const postData: Post = {
       content,
-      author: user?.fullName || (user?.username ?? "Anônimo"),
+      author: displayName,
       authorId: user.id,
       slug: slugifySentences(user.username + content.slice(0, 10)),
       userImageUrl: user?.imageUrl,
@@ -64,13 +78,15 @@ export function CreatePost() {
   const { mutateAsync: handleCreatePost, isPending: publishing } = useMutation({
     mutationFn: createNewPost,
     onSuccess: () => {
-      router.push(pathname + "?" + createQueryString("page", (1).toString()));
+      router.replace(
+        pathname + "?" + createQueryString("page", (1).toString())
+      );
       setOpen(false);
       setContent("");
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["posts", user?.id] });
-        queryClient.invalidateQueries({ queryKey: ["totalOfPosts"] });
-      }, 1000);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts", user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["totalOfPosts"] });
     },
     retry: 3,
     retryDelay: 1000,

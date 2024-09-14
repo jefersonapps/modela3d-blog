@@ -1,5 +1,5 @@
 import { db } from "./drizzle";
-import { postsTable } from "./schema";
+import { postsTable, usersTable } from "./schema";
 import { desc, eq, sql } from "drizzle-orm";
 
 interface Like {
@@ -186,4 +186,52 @@ export const toggleLike = async (postId: string, authorId: string) => {
   }
 
   return { message: "Like toggled successfully" };
+};
+
+export const createUser = async (userName: string, userId: string) => {
+  try {
+    const existingUser = await db
+      .select({
+        id: usersTable.user_id,
+      })
+      .from(usersTable)
+      .where(eq(usersTable.user_id, userId))
+      .limit(1);
+
+    if (existingUser.length > 0) {
+      console.log("User already exists with this userId:", userId);
+      return;
+    }
+
+    await db.insert(usersTable).values({
+      user_name: userName,
+      user_id: userId,
+      created_at: sql`now()`,
+    });
+
+    console.log("User created successfully");
+  } catch (err) {
+    console.error("Error executing SQL query:", err);
+    throw err;
+  }
+};
+
+export const getUser = async (userId: string) => {
+  const user = await db
+    .select({
+      id: usersTable.id,
+      userName: usersTable.user_name,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.user_id, userId))
+    .limit(1);
+
+  return user;
+};
+
+export const updateUser = async (userId: string, userName: string) => {
+  await db
+    .update(usersTable)
+    .set({ user_name: userName })
+    .where(eq(usersTable.user_id, userId));
 };
