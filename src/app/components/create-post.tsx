@@ -1,6 +1,5 @@
 "use client";
 import { useState, useCallback, FormEvent } from "react";
-import "easymde/dist/easymde.min.css";
 import { slugifySentences } from "@/app/utils/helpers";
 import { useUser } from "@clerk/nextjs";
 
