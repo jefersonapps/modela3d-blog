@@ -96,12 +96,14 @@ export const getAllPosts = async ({
   userId,
   page,
   pageSize,
+  searchQuery = "",
 }: {
   userId: string;
   page: number;
   pageSize: number;
+  searchQuery?: string | null;
 }) => {
-  const posts = await db
+  const postsQuery = db
     .select({
       id: postsTable.id,
       authorId: postsTable.author_id,
@@ -131,6 +133,16 @@ export const getAllPosts = async ({
     .orderBy(desc(postsTable.created_at))
     .limit(pageSize)
     .offset((page - 1) * pageSize);
+
+  if (searchQuery) {
+    postsQuery.where(
+      sql`(${postsTable.content} ILIKE ${`%${searchQuery}%`} OR ${
+        postsTable.author
+      } ILIKE ${`%${searchQuery}%`})`
+    );
+  }
+
+  const posts = await postsQuery;
   return posts;
 };
 

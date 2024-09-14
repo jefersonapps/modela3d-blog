@@ -12,13 +12,15 @@ import { PostSkeleton } from "./skeletons/post-skeleton";
 import { getPostsForUnauthenticatedUser } from "../http/get-posts-for-unauthenticated-user";
 import { Card } from "@/components/ui/card";
 import { Post } from "../db/actions";
-import { Pin } from "lucide-react";
+import { Pin, Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import z from "zod";
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import { getTotalOfPosts } from "../http/get-total-of-posts";
 import { PaginationControls } from "./list-posts/pagination-controls";
 import { createUser } from "../http/create-user";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const perPage = 10;
 
@@ -40,6 +42,9 @@ const fixedPost: Post = {
 export function ListPosts() {
   const { isLoaded, user } = useUser();
   const searchParams = useSearchParams();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const { data: totalOfPosts, isLoading: isLoadingTotalOfPosts } = useQuery({
     queryKey: ["totalOfPosts"],
@@ -60,9 +65,14 @@ export function ListPosts() {
   );
 
   const { data: posts, isLoading: isLoadingPosts } = useQuery({
-    queryKey: ["posts", user?.id, page],
+    queryKey: ["posts", user?.id, page, searchQuery],
     queryFn: () =>
-      getPosts({ userId: user?.id, page: page, pageSize: perPage }),
+      getPosts({
+        userId: user?.id,
+        page: page,
+        pageSize: perPage,
+        searchQuery,
+      }),
     enabled: !!user?.id && isLoaded,
     staleTime: Infinity,
   });
@@ -89,7 +99,12 @@ export function ListPosts() {
     (totalOfPosts && totalOfPosts[0].count / perPage) || 1
   );
 
-  if (!posts && !postsForUnauthenticatedUser) return null;
+  const handleSearchSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (searchInputRef.current) {
+      setSearchQuery(searchInputRef.current.value);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -112,6 +127,21 @@ export function ListPosts() {
           ))}
         </div>
       )}
+
+      <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+        <div className="relative w-full">
+          <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            ref={searchInputRef}
+            type="search"
+            placeholder="Pesquise por postagens ou usuários..."
+            className="pl-8 h-11"
+          />
+        </div>
+        <Button type="submit">
+          <span>Buscar</span>
+        </Button>
+      </form>
 
       {/* Renderizar posts de usuários autenticados */}
       {!isLoadingPosts && isLoaded && user?.id && (
