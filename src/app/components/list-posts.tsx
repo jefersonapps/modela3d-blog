@@ -13,7 +13,7 @@ import { getPostsForUnauthenticatedUser } from "../http/get-posts-for-unauthenti
 import { Card } from "@/components/ui/card";
 import { Post } from "../db/actions";
 import { Pin, Search } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import z from "zod";
 import { useCallback, useRef, useState } from "react";
 import { getTotalOfPosts } from "../http/get-total-of-posts";
@@ -43,6 +43,8 @@ export function ListPosts() {
   const { isLoaded, user } = useUser();
   const searchParams = useSearchParams();
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -103,6 +105,9 @@ export function ListPosts() {
     event.preventDefault();
     if (searchInputRef.current) {
       setSearchQuery(searchInputRef.current.value);
+      router.replace(
+        pathname + "?" + createQueryString("page", (1).toString())
+      );
     }
   };
 
