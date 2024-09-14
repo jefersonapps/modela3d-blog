@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { Post, UnauthenticatedPosts } from "../db/actions";
 import { Heart } from "phosphor-react";
@@ -11,6 +11,7 @@ export function PostBottomActions({
   post: Post | UnauthenticatedPosts;
 }) {
   const { user } = useUser();
+  const { openSignIn } = useClerk();
   const [liking, setLiking] = useState<boolean>(false);
   const [liked, setLiked] = useState<boolean>(() => {
     if (post !== undefined && "likes" in post) {
@@ -28,6 +29,9 @@ export function PostBottomActions({
   );
 
   const handleToggleLike = async () => {
+    if (!user?.id) {
+      openSignIn();
+    }
     if (!user?.id || liking || !post.id) return;
 
     setLiking(true);
