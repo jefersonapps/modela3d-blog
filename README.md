@@ -6,7 +6,7 @@
 
 ## 🎯 Objetivo
 
-O Modela 3D Blog é uma plataforma interativa onde usuários podem compartilhar suas experiências e conhecimentos relacionados ao mundo da modelagem 3D. Com um sistema de posts, curtidas, comentários e um editor Markdown intuitivo, o blog visa construir uma comunidade engajada e promover a troca de informações entre usuários do software Modela3D.
+O Modela 3D Blog é uma plataforma interativa onde usuários podem compartilhar suas experiências e conhecimentos relacionados ao mundo da modelagem 3D. Com um sistema de posts, curtidas, comentários e um editor Markdown intuitivo, o blog visa construir uma comunidade engajada e promover a troca de informações entre usuários do software Modela 3D.
 
 ## ✨ Funcionalidades
 
