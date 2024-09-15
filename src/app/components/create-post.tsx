@@ -84,8 +84,10 @@ export function CreatePost() {
       setContent("");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts", user?.id] });
-      queryClient.invalidateQueries({ queryKey: ["totalOfPosts"] });
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["posts", user?.id] });
+        queryClient.invalidateQueries({ queryKey: ["totalOfPosts"] });
+      }, 1000);
     },
     retry: 3,
     retryDelay: 1000,
