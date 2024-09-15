@@ -5,6 +5,7 @@ import "md-editor-rt/lib/style.css";
 import PT_BR from "../utils/locale/pt-br";
 import { Post, UnauthenticatedPosts } from "../db/actions";
 import { useCurrentTheme } from "../hooks/use-current-theme";
+import { insertLinks } from "../utils/helpers";
 
 config({
   editorConfig: {
@@ -20,10 +21,11 @@ interface ContentPreviewProps {
 
 export function ContentPreview({ post }: ContentPreviewProps) {
   const theme = useCurrentTheme();
+
   return (
     <MdPreview
       editorId="content"
-      modelValue={post.content}
+      modelValue={insertLinks(post.content)}
       theme={theme}
       language="pt-br"
       className="rounded-md"

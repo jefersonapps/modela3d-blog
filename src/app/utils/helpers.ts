@@ -23,3 +23,27 @@ export const slugifySentences = (sentence: string): string => {
 
   return `${slug}-${randomLetters}`;
 };
+
+export const insertLinks = (markdown: string) => {
+  return markdown.replace(/```(\w*)([^`]*)```/gim, (match, lang, code) => {
+    const encodedCode = encodeURIComponent(code.trim());
+
+    let link = "";
+
+    if (lang === "js" || lang === "javascript") {
+      link = `
+<center>
+<a href="http://modela3d.vercel.app//physics?code=${encodedCode}&autoplay=true" target="_blank">Rodar no Modela 3D (JavaScript)</a>
+</center>`;
+    } else if (lang === "py" || lang === "python") {
+      link = `
+<center>
+<a href="http://modela3d.vercel.app//python?code=${encodedCode}&autoplay=true" target="_blank">Rodar no Modela 3D (Python)</a>
+</center>`;
+    } else {
+      link = "";
+    }
+
+    return `${match}\n${link}`;
+  });
+};

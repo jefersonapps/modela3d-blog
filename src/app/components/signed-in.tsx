@@ -15,7 +15,7 @@ import {
 import { User2, UserCircle } from "lucide-react";
 import { SignOut } from "phosphor-react";
 import { Button } from "@/components/ui/button";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "../http/update-user";
 import { getUser } from "../http/get-user";
@@ -35,6 +35,7 @@ export const CustomUserButton = () => {
   const { isLoaded, user } = useUser();
   const { signOut, openUserProfile } = useClerk();
   const [isUserDialogOpen, setIsUserDialogOpen] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string | undefined>("");
 
   const router = useRouter();
 
@@ -64,9 +65,11 @@ export const CustomUserButton = () => {
     staleTime: Infinity,
   });
 
-  const [userName, setUserName] = useState<string | undefined>(
-    userData?.[0]?.userName
-  );
+  useEffect(() => {
+    if (userData && userData[0]?.userName) {
+      setUserName(userData[0].userName);
+    }
+  }, [userData]);
 
   if (!isLoaded) return null;
 

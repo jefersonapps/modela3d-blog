@@ -81,7 +81,12 @@ export function ListPosts() {
 
   useQuery({
     queryKey: ["user"],
-    queryFn: () => createUser(user?.fullName, user?.id),
+    queryFn: () => {
+      const userName = user?.fullName
+        ? user.fullName
+        : String(user?.emailAddresses);
+      return createUser(userName, user?.id);
+    },
     enabled: !!user?.id && isLoaded,
     staleTime: Infinity,
   });

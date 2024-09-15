@@ -22,7 +22,6 @@ export function MarkdownEditor({
   onChangeContent,
 }: MarkdownEditorProps) {
   const theme = useCurrentTheme();
-
   const { isMobile, deviceWidth, deviceHeight } = useScreenDetector();
 
   return (
@@ -50,6 +49,7 @@ export function MarkdownEditor({
         theme={theme}
         language="pt-br"
         className="rounded-md !h-64 md:!h-full"
+        autoDetectCode
       />
     </div>
   );
