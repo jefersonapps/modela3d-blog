@@ -30,6 +30,7 @@ import {
 import { Spinner } from "@/components/spinner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 export const CustomUserButton = () => {
   const { isLoaded, user } = useUser();
@@ -46,16 +47,17 @@ export const CustomUserButton = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["username"] });
       setIsUserDialogOpen(false);
+      toast.success("Nome de usuário atualizado com sucesso");
     },
     onError: () => {
       setUserName(user?.fullName ?? user?.primaryEmailAddress?.emailAddress);
+      toast.error("Erro ao atualizar nome de usuário");
     },
   });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await updateUserName();
-    console.log(response);
+    await updateUserName();
   };
 
   const { data: userData } = useQuery({

@@ -7,7 +7,6 @@ export async function updateUser({ userId, userName }: User): Promise<void> {
     throw new Error("User name or user ID is not provided");
   }
 
-  console.log(userId, userName);
   const response = await fetch("/api/user/update", {
     method: "PUT",
     headers: {

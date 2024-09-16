@@ -11,6 +11,7 @@ import { Spinner } from "@/components/spinner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updatePost } from "../http/update-post";
 import { MarkdownEditor } from "./markdown-editor";
+import { toast } from "sonner";
 
 interface UpdatePostDialogProps {
   postId?: string | null;
@@ -35,9 +36,10 @@ export function UpdatePostDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       onClose();
+      toast.success("Postagem editada com sucesso");
     },
-    onError: (error) => {
-      console.error("Error updating post:", error);
+    onError: () => {
+      toast.error("Erro ao editar postagem, tente novamente.");
     },
   });
 

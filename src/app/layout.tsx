@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemedClerkProvider } from "./contexts/clerk-context";
 import CustomQueryClientProvider from "./contexts/react-query-context";
+import { Toaster } from "sonner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -39,7 +40,22 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <CustomQueryClientProvider>
-            <ThemedClerkProvider>{children}</ThemedClerkProvider>
+            <ThemedClerkProvider>
+              {children}
+              <Toaster
+                toastOptions={{
+                  classNames: {
+                    error:
+                      "bg-rose-400 border-rose-800 dark:bg-rose-700 dark:border-rose-950 text-rose-950 dark:text-rose-200",
+                    success:
+                      "bg-emerald-400 border-emerald-800 dark:bg-emerald-700 dark:border-emerald-950 text-emerald-950 dark:text-emerald-100",
+                    warning:
+                      "bg-amber-400 border-amber-800 dark:bg-amber-700 dark:border-amber-950 text-amber-950 dark:text-amber-200",
+                    info: "bg-blue-400 border-blue-800 dark:bg-blue-700 dark:border-blue-950 text-blue-950 dark:text-blue-200",
+                  },
+                }}
+              />
+            </ThemedClerkProvider>
           </CustomQueryClientProvider>
         </ThemeProvider>
       </body>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Post, UnauthenticatedPosts } from "../db/actions";
 import { Heart } from "phosphor-react";
 import { toggleLikePost } from "../http/like-post";
+import { toast } from "sonner";
 
 export function PostBottomActions({
   post,
@@ -41,10 +42,9 @@ export function PostBottomActions({
       setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
       await toggleLikePost(post.id, user.id);
     } catch (error) {
-      console.error("Error liking post:", error);
-
       setLiked((prev) => !prev);
       setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
+      toast.error("Erro ao curtir postagem, tente novamente.");
     } finally {
       setLiking(false);
     }

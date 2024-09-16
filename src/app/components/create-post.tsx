@@ -22,6 +22,7 @@ import { Card } from "@/components/ui/card";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MarkdownEditor } from "./markdown-editor";
 import { getUser } from "../http/get-user";
+import { toast } from "sonner";
 
 export function CreatePost() {
   const { isLoaded, user } = useUser();
@@ -87,8 +88,10 @@ export function CreatePost() {
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ["posts", user?.id] });
         queryClient.invalidateQueries({ queryKey: ["totalOfPosts"] });
+        toast.success("Postagem criada com sucesso");
       }, 1000);
     },
+    onError: () => toast.error("Erro ao criar postagem"),
     retry: 3,
     retryDelay: 1000,
   });

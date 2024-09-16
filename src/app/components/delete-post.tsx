@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/spinner";
+import { toast } from "sonner";
 
 interface DeletePostProps {
   postId?: string | null;
@@ -29,9 +30,10 @@ export function DeletePost({ postId }: DeletePostProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       setOpen(false);
+      toast.success("Postagem excluída com sucesso");
     },
-    onError: (error) => {
-      console.error("Error deleting post:", error);
+    onError: () => {
+      toast.error("Erro ao excluir postagem, tente novamente.");
     },
   });
 
