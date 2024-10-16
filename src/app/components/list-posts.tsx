@@ -130,14 +130,6 @@ export function ListPosts() {
           <ContentPreview post={fixedPost} />
         </Card>
       )}
-      {(isLoadingPosts || isLoadingUnauthenticatedPosts || !isLoaded) && (
-        <div className="space-y-4">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <PostSkeleton key={i} />
-          ))}
-        </div>
-      )}
-
       <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
         <div className="relative w-full">
           <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
@@ -152,6 +144,13 @@ export function ListPosts() {
           <span>Buscar</span>
         </Button>
       </form>
+      {(isLoadingPosts || isLoadingUnauthenticatedPosts || !isLoaded) && (
+        <div className="space-y-4">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <PostSkeleton key={i} />
+          ))}
+        </div>
+      )}
 
       {/* Renderizar posts de usuários autenticados */}
       {!isLoadingPosts && isLoaded && user?.id && (
