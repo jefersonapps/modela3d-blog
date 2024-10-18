@@ -3,9 +3,6 @@
 import { useUser } from "@clerk/nextjs";
 import { PostUserInfo } from "./post-user-info";
 import { ContentPreview } from "./content-preview";
-import { PostActions } from "./post-actions";
-import { PostBottomActions } from "./post-bottom-actions";
-import { Separator } from "@/components/ui/separator";
 import { useQuery } from "@tanstack/react-query";
 import { getPosts } from "../http/get-posts";
 import { PostSkeleton } from "./skeletons/post-skeleton";
@@ -21,8 +18,8 @@ import { PaginationControls } from "./list-posts/pagination-controls";
 import { createUser } from "../http/create-user";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-const perPage = 10;
+import { PostItem } from "./post-item";
+import { PER_PAGE } from "../constants/constants";
 
 const fixedPost: Post = {
   id: "fixed-post",
@@ -72,7 +69,7 @@ export function ListPosts() {
       getPosts({
         userId: user?.id,
         page: page,
-        pageSize: perPage,
+        pageSize: PER_PAGE,
         searchQuery,
       }),
     enabled: !!user?.id && isLoaded,
@@ -97,13 +94,13 @@ export function ListPosts() {
   } = useQuery({
     queryKey: ["postsForUnauthenticatedUser", page],
     queryFn: () =>
-      getPostsForUnauthenticatedUser({ page: page, pageSize: perPage }),
+      getPostsForUnauthenticatedUser({ page: page, pageSize: PER_PAGE }),
     enabled: !user?.id && isLoaded,
     staleTime: Infinity,
   });
 
   const lastPage = Math.ceil(
-    (totalOfPosts && totalOfPosts[0].count / perPage) || 1
+    (totalOfPosts && totalOfPosts[0].count / PER_PAGE) || 1
   );
 
   const handleSearchSubmit = (event: React.FormEvent) => {
@@ -117,7 +114,7 @@ export function ListPosts() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-4">
       {isLoaded && (
         <Card className="space-y-2 bg-white dark:bg-zinc-900 p-4 rounded-md border-t-4 border-t-emerald-400 dark:border-t-emerald-700">
           <div className="flex justify-between">
@@ -156,18 +153,7 @@ export function ListPosts() {
       {!isLoadingPosts && isLoaded && user?.id && (
         <div className="space-y-4">
           {posts?.map((post) => (
-            <Card
-              key={post.id}
-              className="space-y-2 bg-white dark:bg-zinc-900 p-4 rounded-md"
-            >
-              <div className="flex justify-between">
-                <PostUserInfo post={post} />
-                <PostActions post={post} />
-              </div>
-              <ContentPreview post={post} />
-              <Separator />
-              <PostBottomActions post={post} />
-            </Card>
+            <PostItem key={post.id} post={post} />
           ))}
         </div>
       )}
@@ -176,18 +162,7 @@ export function ListPosts() {
       {!isLoadingUnauthenticatedPosts && isLoaded && !user?.id && (
         <div className="space-y-4">
           {postsForUnauthenticatedUser?.map((post) => (
-            <Card
-              key={post.id}
-              className="space-y-2 bg-white dark:bg-zinc-900 p-4 rounded-md"
-            >
-              <div className="flex justify-between">
-                <PostUserInfo post={post} />
-                <PostActions post={post} />
-              </div>
-              <ContentPreview post={post} />
-              <Separator />
-              <PostBottomActions post={post} />
-            </Card>
+            <PostItem key={post.id} post={post} />
           ))}
         </div>
       )}

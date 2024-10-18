@@ -31,6 +31,7 @@ import { Spinner } from "@/components/spinner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export const CustomUserButton = () => {
   const { isLoaded, user } = useUser();
@@ -86,8 +87,11 @@ export const CustomUserButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="py-6 px-4 flex items-center gap-4">
-          <span className="font-semibold text-base hidden md:block truncate">
+        <Button
+          variant="ghost"
+          className="py-6 px-2 flex items-center gap-4 min-w-[30px]"
+        >
+          <span className="font-semibold text-base hidden md:block">
             {displayName}
           </span>
           <Image
@@ -95,13 +99,29 @@ export const CustomUserButton = () => {
             src={user?.imageUrl}
             width={30}
             height={30}
-            className="rounded-full"
+            className="rounded-full min-w-[30px] min-h-[30px]"
           />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent className="w-fit" align="end">
           <DropdownMenuGroup>
+            <Link href={`/user/${user?.id}`}>
+              <Button
+                variant="ghost"
+                className="w-full flex items-center justify-start px-2"
+              >
+                <Image
+                  alt={user?.primaryEmailAddress?.emailAddress ?? "Perfil"}
+                  src={user?.imageUrl}
+                  width={30}
+                  height={30}
+                  className="rounded-full mr-2 h-4 w-4"
+                />
+                <span>Meu perfil</span>
+              </Button>
+            </Link>
+
             <DropdownMenuItem asChild>
               <Dialog
                 open={isUserDialogOpen}

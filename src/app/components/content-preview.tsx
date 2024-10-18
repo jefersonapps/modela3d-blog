@@ -1,5 +1,3 @@
-"use client";
-
 import { MdPreview, config } from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import PT_BR from "../utils/locale/pt-br";

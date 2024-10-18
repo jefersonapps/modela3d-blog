@@ -1,5 +1,3 @@
-"use client";
-
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { Post, UnauthenticatedPosts } from "../db/actions";
@@ -25,7 +23,7 @@ interface PostActionsProps {
 export const PostActions = ({ post }: PostActionsProps) => {
   const { user } = useUser();
 
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [dialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   return (
     <div className="flex items-center space-x-2">
@@ -41,7 +39,7 @@ export const PostActions = ({ post }: PostActionsProps) => {
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => setDialogOpen(true)}>
+                <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
                   <Edit className="mr-2 h-4 w-4" />
                   <span>Editar</span>
                 </DropdownMenuItem>
@@ -57,7 +55,7 @@ export const PostActions = ({ post }: PostActionsProps) => {
         <UpdatePostDialog
           postId={post.id}
           currentContent={post.content}
-          onClose={() => setDialogOpen(false)}
+          onClose={() => setIsDialogOpen(false)}
         />
       )}
     </div>

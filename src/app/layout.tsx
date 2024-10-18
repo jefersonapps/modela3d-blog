@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ThemedClerkProvider } from "./contexts/clerk-context";
 import CustomQueryClientProvider from "./contexts/react-query-context";
 import { Toaster } from "sonner";
+import { TopBar } from "./components/top-bar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -41,7 +42,10 @@ export default function RootLayout({
         >
           <CustomQueryClientProvider>
             <ThemedClerkProvider>
-              {children}
+              <div className="space-y-4 p-4 max-w-6xl mx-auto">
+                <TopBar />
+                {children}
+              </div>
               <Toaster
                 toastOptions={{
                   classNames: {

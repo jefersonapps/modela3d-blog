@@ -22,6 +22,34 @@
       "when": 1726325247501,
       "tag": "0002_material_tombstone",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1729098932501,
+      "tag": "0003_material_centennial",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1729112795124,
+      "tag": "0004_deep_thanos",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1729215581595,
+      "tag": "0005_wandering_jane_foster",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1729271648800,
+      "tag": "0006_modern_gwen_stacy",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { db } from "./drizzle";
-import { postsTable, usersTable } from "./schema";
+import { commentsTable, postsTable, usersTable } from "./schema";
 import { desc, eq, sql } from "drizzle-orm";
 
 interface Like {
@@ -146,10 +146,101 @@ export const getAllPosts = async ({
   return posts;
 };
 
-export const getSinglePost = async (slug: string) => {
-  return await db.query.postsTable.findFirst({
-    where: (post, { eq }) => eq(post.slug, slug),
-  });
+export const getSinglePost = async (postId: string, userId: string) => {
+  const post = await db
+    .select({
+      id: postsTable.id,
+      authorId: postsTable.author_id,
+      content: postsTable.content,
+      author: postsTable.author,
+      slug: postsTable.slug,
+      likes: sql<Likes>/*sql*/ `
+      JSON_BUILD_OBJECT(
+        'likedByCurrentUser', 
+        (
+          SELECT EXISTS(
+            SELECT 1
+            FROM JSONB_ARRAY_ELEMENTS(${postsTable.likes}) AS like_obj
+            WHERE (like_obj->>'author_id') = ${userId}
+          )
+        ),
+        'likesCount', 
+        (
+          SELECT JSONB_ARRAY_LENGTH(${postsTable.likes})
+        )
+      )
+    `,
+      userImageUrl: postsTable.user_image_url,
+      createdAt: postsTable.created_at,
+    })
+    .from(postsTable)
+    .where(eq(postsTable.id, postId))
+    .limit(1);
+
+  return post;
+};
+
+export const getPostsOfUser = async ({
+  userId,
+  page,
+  pageSize,
+  searchQuery = "",
+}: {
+  userId: string;
+  page: number;
+  pageSize: number;
+  searchQuery?: string | null;
+}) => {
+  const postsQuery = db
+    .select({
+      id: postsTable.id,
+      authorId: postsTable.author_id,
+      content: postsTable.content,
+      author: postsTable.author,
+      slug: postsTable.slug,
+      likes: sql<Likes>/*sql*/ `
+        JSON_BUILD_OBJECT(
+          'likedByCurrentUser', 
+          (
+            SELECT EXISTS(
+              SELECT 1
+              FROM JSONB_ARRAY_ELEMENTS(${postsTable.likes}) AS like_obj
+              WHERE (like_obj->>'author_id') = ${userId}
+            )
+          ),
+          'likesCount', 
+          (
+            SELECT JSONB_ARRAY_LENGTH(${postsTable.likes})
+          )
+        )
+      `,
+      userImageUrl: postsTable.user_image_url,
+      createdAt: postsTable.created_at,
+    })
+    .from(postsTable)
+    .where(
+      sql`(${postsTable.author_id} = ${userId}) AND (${
+        postsTable.content
+      } ILIKE ${`%${searchQuery}%`} OR ${
+        postsTable.author
+      } ILIKE ${`%${searchQuery}%`})`
+    )
+    .orderBy(desc(postsTable.created_at))
+    .limit(pageSize)
+    .offset((page - 1) * pageSize);
+
+  const posts = await postsQuery;
+  return posts;
+};
+
+export const getTotalOfUserPosts = async (userId: string) => {
+  const result = await db
+    .select({
+      count: sql<number>`CAST(COUNT(*) AS INTEGER)`,
+    })
+    .from(postsTable)
+    .where(eq(postsTable.author_id, userId));
+  return result;
 };
 
 export const deletePost = async (id: string) => {
@@ -163,7 +254,7 @@ export const updatePost = async (content: string, id: string) => {
     .where(eq(postsTable.id, id));
 };
 
-export const toggleLike = async (postId: string, authorId: string) => {
+export const toggleLikePost = async (postId: string, authorId: string) => {
   const post = await db.query.postsTable.findFirst({
     where: (post, { eq }) => eq(post.id, postId),
   });
@@ -246,4 +337,124 @@ export const updateUser = async (userId: string, userName: string) => {
     .update(usersTable)
     .set({ user_name: userName })
     .where(eq(usersTable.user_id, userId));
+};
+
+export interface Comment {
+  id?: string;
+  postId: string;
+  parentCommentId: string | null;
+  parentCommentAuthor: string | null;
+  parentCommentAuthorId: string | null;
+  content: string;
+  author: string;
+  authorId: string;
+  userImageUrl: string;
+  likes?: Likes;
+  createdAt?: Date;
+}
+
+export const createComment = async (comment: Comment) => {
+  try {
+    await db.insert(commentsTable).values({
+      author: comment.author,
+      author_id: comment.authorId,
+      content: comment.content,
+      post_id: comment.postId,
+      parent_comment_id: comment.parentCommentId || null,
+      parent_comment_author: comment.parentCommentAuthor || null,
+      parent_comment_author_id: comment.parentCommentAuthorId || null,
+      user_image_url: comment.userImageUrl,
+      likes: sql`'[]'::jsonb`,
+      created_at: sql`now()`,
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCommentsByPostId = async (postId: string, userId: string) => {
+  const comments = await db
+    .select({
+      id: commentsTable.id,
+      postId: commentsTable.post_id,
+      parentCommentId: commentsTable.parent_comment_id,
+      parentCommentAuthor: commentsTable.parent_comment_author,
+      parentCommentAuthorId: commentsTable.parent_comment_author_id,
+      content: commentsTable.content,
+      author: commentsTable.author,
+      authorId: commentsTable.author_id,
+      userImageUrl: commentsTable.user_image_url,
+      likes: sql<Like[]>/*sql*/ `
+        JSON_BUILD_OBJECT(
+          'likedByCurrentUser', 
+          (
+            SELECT EXISTS(
+              SELECT 1
+              FROM JSONB_ARRAY_ELEMENTS(${commentsTable.likes}) AS like_obj
+              WHERE (like_obj->>'author_id') = ${userId}
+            )
+          ),
+          'likesCount', 
+          (
+            SELECT JSONB_ARRAY_LENGTH(${commentsTable.likes})
+          )
+        )
+      `,
+      createdAt: commentsTable.created_at,
+    })
+    .from(commentsTable)
+    .where(eq(commentsTable.post_id, postId))
+    .orderBy(desc(commentsTable.created_at))
+    .limit(10);
+
+  return comments;
+};
+
+export const toggleLikeComment = async (
+  commentId: string,
+  authorId: string
+) => {
+  const comment = await db.query.commentsTable.findFirst({
+    where: (comment, { eq }) => eq(comment.id, commentId),
+  });
+
+  if (!comment) {
+    throw new Error("comment not found");
+  }
+
+  const likeExists = comment.likes.some((like) => like.author_id === authorId);
+
+  if (likeExists) {
+    const updatedLikes = comment.likes.filter(
+      (like) => like.author_id !== authorId
+    );
+
+    await db
+      .update(commentsTable)
+      .set({ likes: updatedLikes })
+      .where(eq(commentsTable.id, commentId));
+  } else {
+    const updatedLikes = [
+      ...comment.likes,
+      { author_id: authorId, comment_id: commentId },
+    ];
+
+    await db
+      .update(commentsTable)
+      .set({ likes: updatedLikes })
+      .where(eq(commentsTable.id, commentId));
+  }
+
+  return { message: "Like toggled successfully" };
+};
+
+export const deleteComment = async (commentId: string) => {
+  await db.delete(commentsTable).where(eq(commentsTable.id, commentId));
+};
+
+export const updateComment = async (commentId: string, content: string) => {
+  await db
+    .update(commentsTable)
+    .set({ content: content })
+    .where(eq(commentsTable.id, commentId));
 };

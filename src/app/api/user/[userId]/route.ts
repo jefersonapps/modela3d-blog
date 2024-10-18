@@ -5,7 +5,6 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const userId = url.pathname.split("/")[3];
 
-  console.log(userId);
   if (typeof userId === "string") {
     try {
       const posts = await getUser(userId);
