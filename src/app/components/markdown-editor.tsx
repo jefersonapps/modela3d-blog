@@ -3,6 +3,8 @@ import { useCurrentTheme } from "../hooks/use-current-theme";
 import { MdEditor, config } from "md-editor-rt";
 import "md-editor-rt/lib/style.css";
 import PT_BR from "../utils/locale/pt-br";
+import type { ExposeParam, FocusOption } from "md-editor-rt";
+import { useEffect, useRef } from "react";
 
 config({
   editorConfig: {
@@ -23,6 +25,13 @@ export function MarkdownEditor({
 }: MarkdownEditorProps) {
   const theme = useCurrentTheme();
   const { isMobile, deviceWidth, deviceHeight } = useScreenDetector();
+  const editorRef = useRef<ExposeParam>();
+
+  const option: FocusOption | undefined = "end";
+
+  useEffect(() => {
+    editorRef.current?.focus(option);
+  }, []);
 
   return (
     <div
@@ -33,6 +42,7 @@ export function MarkdownEditor({
       }}
     >
       <MdEditor
+        ref={editorRef}
         modelValue={content}
         onChange={onChangeContent}
         autoFocus
