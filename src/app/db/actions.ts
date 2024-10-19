@@ -191,7 +191,7 @@ export const getPostsOfUser = async ({
   pageSize: number;
   searchQuery?: string | null;
 }) => {
-  const postsQuery = db
+  const posts = await db
     .select({
       id: postsTable.id,
       authorId: postsTable.author_id,
@@ -229,7 +229,6 @@ export const getPostsOfUser = async ({
     .limit(pageSize)
     .offset((page - 1) * pageSize);
 
-  const posts = await postsQuery;
   return posts;
 };
 
