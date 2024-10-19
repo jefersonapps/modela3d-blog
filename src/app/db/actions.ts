@@ -1,6 +1,6 @@
 import { db } from "./drizzle";
 import { commentsTable, postsTable, usersTable } from "./schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, or, sql, and, ilike } from "drizzle-orm";
 
 interface Like {
   author_id: string;
@@ -219,13 +219,13 @@ export const getPostsOfUser = async ({
     })
     .from(postsTable)
     .where(
-      sql`(${postsTable.author_id} = ${userId}) AND (${
-        searchQuery
-          ? `${postsTable.content} ILIKE ${`%${searchQuery}%`} OR ${
-              postsTable.author
-            } ILIKE ${`%${searchQuery}%`}`
-          : "TRUE"
-      })`
+      and(
+        eq(postsTable.author_id, userId),
+        or(
+          ilike(postsTable.content, "%" + searchQuery + "%"),
+          ilike(postsTable.author, "%" + searchQuery + "%")
+        )
+      )
     )
     .orderBy(desc(postsTable.created_at))
     .limit(pageSize)
