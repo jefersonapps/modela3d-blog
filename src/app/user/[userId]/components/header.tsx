@@ -4,7 +4,12 @@ import { UserInfo } from "./user-info";
 export async function Header({ userId }: { userId: string }) {
   const user = await clerkClient.users.getUser(userId);
 
-  const { fullName, emailAddresses, imageUrl, createdAt } = user;
+  const {
+    fullName = "",
+    emailAddresses = [],
+    imageUrl = "",
+    createdAt = Date.now(),
+  } = user;
 
   return (
     <UserInfo
