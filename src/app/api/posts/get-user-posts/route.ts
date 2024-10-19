@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const page = searchParams.get("page");
+  const page = parseInt(searchParams.get("page") || "1");
   const userId = searchParams.get("userId");
-  const pageSize = searchParams.get("pageSize");
+  const pageSize = parseInt(searchParams.get("pageSize") || "10");
   const searchQuery = searchParams.get("searchQuery");
 
   if (!page || !userId || !pageSize) {
@@ -15,9 +15,9 @@ export async function GET(request: Request) {
     );
   }
   const post = await getPostsOfUser({
-    page: parseInt(page),
+    page,
     userId,
-    pageSize: parseInt(pageSize),
+    pageSize,
     searchQuery,
   });
 
