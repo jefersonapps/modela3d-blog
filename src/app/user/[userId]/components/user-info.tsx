@@ -3,6 +3,8 @@
 import { getUser } from "@/app/http/get-user";
 import { formatDateStringWithoutTime } from "@/app/utils/helpers";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import { useCurrentTheme } from "@/app/hooks/use-current-theme";
 
 interface UserInfoProps {
   fullName: string;
@@ -19,6 +21,8 @@ export function UserInfo({
   createdAt,
   userId,
 }: UserInfoProps) {
+  const currentTheme = useCurrentTheme();
+
   const { data: userData } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getUser({ userId: userId }),
@@ -34,14 +38,16 @@ export function UserInfo({
 
   return (
     <div>
-      <div className="h-36 bg-zinc-800"></div>
+      <div className="h-36 bg-cover bg-[center_top_15%] rounded-t-md bg-header-light dark:bg-header-dark"></div>
 
       <div className="relative -mt-12 flex items-center justify-between">
         {imageUrl && (
-          <img
+          <Image
             src={imageUrl}
             alt={`${displayName}`}
             className="w-24 h-24 rounded-full border-4 border-black ml-4"
+            width={96}
+            height={96}
           />
         )}
       </div>

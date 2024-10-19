@@ -56,6 +56,10 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      backgroundImage: {
+        "header-dark": "url('/assets/header-dark.png')",
+        "header-light": "url('/assets/header-light.png')",
+      },
     },
   },
   plugins: [require("tailwindcss-animate"), require("tailwindcss-animated")],
