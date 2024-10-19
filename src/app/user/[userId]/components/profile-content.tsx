@@ -26,7 +26,9 @@ export function ProfileContent({ userId }: { userId: string }) {
   const { data: totalOfPosts, isLoading: isLoadingTotalOfPosts } = useQuery({
     queryKey: ["totalOfUserPosts", userId],
     queryFn: () => getTotalOfUserPosts({ userId }),
-    enabled: true,
+    enabled: !!userId,
+    retry: 3,
+    retryDelay: 1000,
     staleTime: Infinity,
   });
 
@@ -50,11 +52,13 @@ export function ProfileContent({ userId }: { userId: string }) {
         pageSize: PER_PAGE,
         searchQuery,
       }),
-    enabled: !!userId,
+    enabled: !!userId && !!page,
+    retry: 3,
+    retryDelay: 1000,
     staleTime: Infinity,
   });
 
-  console.log("posts", posts);
+  console.log("posts", posts, "total", totalOfPosts);
 
   const lastPage = Math.ceil(
     (totalOfPosts && totalOfPosts[0].count / PER_PAGE) || 1
