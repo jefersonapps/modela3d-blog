@@ -12,6 +12,5 @@ export async function GET(request: Request) {
     );
   }
   const total = await getTotalOfUserPosts(userId);
-  console.log(total);
   return NextResponse.json(total);
 }
