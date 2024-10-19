@@ -220,10 +220,12 @@ export const getPostsOfUser = async ({
     .from(postsTable)
     .where(
       sql`(${postsTable.author_id} = ${userId}) AND (${
-        postsTable.content
-      } ILIKE ${`%${searchQuery}%`} OR ${
-        postsTable.author
-      } ILIKE ${`%${searchQuery}%`})`
+        searchQuery
+          ? `${postsTable.content} ILIKE ${`%${searchQuery}%`} OR ${
+              postsTable.author
+            } ILIKE ${`%${searchQuery}%`}`
+          : "TRUE"
+      })`
     )
     .orderBy(desc(postsTable.created_at))
     .limit(pageSize)

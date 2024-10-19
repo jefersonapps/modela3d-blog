@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
   if (!page || !userId || !pageSize) {
     return Response.json(
-      { message: "Invalid or missing userId or postId" },
+      { message: "Invalid or missing userId or page or pageSize" },
       { status: 400 }
     );
   }
