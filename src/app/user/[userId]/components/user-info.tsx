@@ -19,7 +19,7 @@ export function UserInfo({
   createdAt,
   userId,
 }: UserInfoProps) {
-  const { data: userData, isLoading: isLoadingUser } = useQuery({
+  const { data: userData } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getUser({ userId: userId }),
     enabled: !!userId,

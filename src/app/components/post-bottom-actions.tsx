@@ -48,7 +48,8 @@ export function PostBottomActions({
       setLiked((prev) => !prev);
       setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
       await toggleLikePost(post.id, user.id);
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       setLiked((prev) => !prev);
       setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
       toast.error("Erro ao curtir postagem, tente novamente.");
