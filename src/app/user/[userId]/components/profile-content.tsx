@@ -54,6 +54,8 @@ export function ProfileContent({ userId }: { userId: string }) {
     staleTime: Infinity,
   });
 
+  console.log("posts", posts);
+
   const lastPage = Math.ceil(
     (totalOfPosts && totalOfPosts[0].count / PER_PAGE) || 1
   );
@@ -102,7 +104,7 @@ export function ProfileContent({ userId }: { userId: string }) {
           </div>
         )}
 
-        {!isLoadingPosts && userId && (
+        {!isLoadingPosts && (
           <div className="space-y-4">
             {posts?.map((post) => (
               <PostItem key={post.id} post={post} />
