@@ -35,6 +35,7 @@ export function UpdatePostDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["post", postId] });
       onClose();
       toast.success("Postagem editada com sucesso");
     },
