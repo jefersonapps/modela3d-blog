@@ -21,6 +21,8 @@ export function ProfileContent({ userId }: { userId: string }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  console.log("userId", userId);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const { data: totalOfPosts, isLoading: isLoadingTotalOfPosts } = useQuery({
@@ -31,6 +33,8 @@ export function ProfileContent({ userId }: { userId: string }) {
     retryDelay: 1000,
     staleTime: Infinity,
   });
+
+  console.log("totalOfPosts", totalOfPosts);
 
   const page = z.coerce.number().parse(searchParams.get("page") ?? "1");
 
@@ -58,7 +62,7 @@ export function ProfileContent({ userId }: { userId: string }) {
     staleTime: Infinity,
   });
 
-  console.log("posts", posts, "total", totalOfPosts);
+  console.log("posts", posts);
 
   const lastPage = Math.ceil(
     (totalOfPosts && totalOfPosts[0].count / PER_PAGE) || 1
