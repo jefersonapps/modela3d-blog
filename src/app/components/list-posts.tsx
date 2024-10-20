@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPosts } from "../http/get-posts";
 import { Card } from "@/components/ui/card";
 import { Post } from "../db/actions";
-import { Pin, Search } from "lucide-react";
+import { ListRestart, Pin, Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import z from "zod";
 import { useCallback, useRef, useState } from "react";
@@ -20,6 +20,12 @@ import { PostItem } from "./post-item";
 import { PER_PAGE } from "../constants/constants";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PostSkeleton } from "./skeletons/post-skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const fixedPost: Post = {
   id: "fixed-post",
@@ -152,6 +158,19 @@ export function ListPosts() {
         <Button type="submit">
           <span>Buscar</span>
         </Button>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => resetPosts()}>
+                <ListRestart />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Recarregar postagens</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </form>
 
       {isLoadingPosts && (

@@ -6,9 +6,15 @@ import { getTotalOfUserPosts } from "@/app/http/get-total-of-user-posts";
 import { getUserPosts } from "@/app/http/get-user-posts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useUser } from "@clerk/nextjs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { ListRestart, Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import z from "zod";
@@ -98,6 +104,18 @@ export function ListUserPosts({ userId }: { userId: string }) {
         <Button type="submit">
           <span>Buscar</span>
         </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => resetPosts()}>
+                <ListRestart />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Recarregar postagens</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </form>
       {isLoadingPosts && (
         <div className="space-y-4">

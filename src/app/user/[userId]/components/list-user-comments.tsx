@@ -4,7 +4,7 @@ import { getTotalOfUserComments } from "@/app/http/get-total-of-user-comments";
 import { getUserCommentsWithParentAndPost } from "@/app/http/get-user-comments-with-parent-and-post";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { ListRestart, Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +15,12 @@ import { CommentItem } from "@/app/components/comment-item";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function ListUserComments({ userId }: { userId: string }) {
   const searchParams = useSearchParams();
@@ -108,6 +114,18 @@ export function ListUserComments({ userId }: { userId: string }) {
         <Button type="submit">
           <span>Buscar</span>
         </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => resetComments()}>
+                <ListRestart />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Recarregar comentários</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </form>
       {comments?.length === 0 && (
         <div className="text-zinc-500 h-40 flex flex-col items-center justify-center leading-relaxed">
