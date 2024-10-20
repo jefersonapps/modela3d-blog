@@ -24,9 +24,10 @@ import {
 
 interface CommentActionsProps {
   comment: Comment;
+  userId?: string;
 }
 
-export const CommentActions = ({ comment }: CommentActionsProps) => {
+export const CommentActions = ({ comment, userId }: CommentActionsProps) => {
   const { user } = useUser();
 
   const [dialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -72,6 +73,7 @@ export const CommentActions = ({ comment }: CommentActionsProps) => {
 
       {dialogOpen && (
         <UpdateCommentDialog
+          userId={userId}
           commentId={comment.id}
           currentContent={comment.content}
           onClose={() => setIsDialogOpen(false)}

@@ -1,3 +1,4 @@
+import { alias } from "drizzle-orm/pg-core";
 import { db } from "./drizzle";
 import { commentsTable, postsTable, usersTable } from "./schema";
 import { desc, eq, sql } from "drizzle-orm";
@@ -456,4 +457,159 @@ export const updateComment = async (commentId: string, content: string) => {
     .update(commentsTable)
     .set({ content: content })
     .where(eq(commentsTable.id, commentId));
+};
+
+export const getCommentsWithParentAndPostByUserId = async ({
+  userId,
+  page,
+  pageSize,
+  searchQuery = "",
+}: {
+  userId: string;
+  page: number;
+  pageSize: number;
+  searchQuery?: string | null;
+}) => {
+  const parentCommentAlias = alias(commentsTable, "parent_comment");
+
+  const commentsQuery = await db
+    .select({
+      commentId: commentsTable.id,
+      postId: commentsTable.post_id,
+      parentCommentId: commentsTable.parent_comment_id,
+      parentCommentAuthor: commentsTable.parent_comment_author,
+      parentCommentAuthorId: commentsTable.parent_comment_author_id,
+      commentContent: commentsTable.content,
+      commentAuthor: commentsTable.author,
+      commentAuthorId: commentsTable.author_id,
+      commentLikes: sql/*sql*/ `
+      JSON_BUILD_OBJECT(
+        'likedByCurrentUser', 
+        (
+          SELECT EXISTS(
+            SELECT 1
+            FROM JSONB_ARRAY_ELEMENTS(${commentsTable.likes}) AS like_obj
+            WHERE (like_obj->>'author_id') = ${userId}
+          )
+        ),
+        'likesCount', 
+        (
+          SELECT JSONB_ARRAY_LENGTH(${commentsTable.likes})
+        )
+      )
+    `,
+      commentCreatedAt: commentsTable.created_at,
+      commentUserImageUrl: commentsTable.user_image_url,
+
+      parentCommentContent: sql<
+        string | null
+      >`COALESCE(${parentCommentAlias.content}, NULL)`,
+      parentCommentAuthorName: sql<
+        string | null
+      >`COALESCE(${parentCommentAlias.author}, NULL)`,
+      parentCommentLikes: sql/*sql*/ `
+      JSON_BUILD_OBJECT(
+        'likedByCurrentUser', 
+        (
+          SELECT EXISTS(
+            SELECT 1
+            FROM JSONB_ARRAY_ELEMENTS(${parentCommentAlias.likes}) AS like_obj
+            WHERE (like_obj->>'author_id') = ${userId}
+          )
+        ),
+        'likesCount', 
+        (
+          SELECT JSONB_ARRAY_LENGTH(${parentCommentAlias.likes})
+        )
+      )
+    `,
+      parentCommentCreatedAt: parentCommentAlias.created_at,
+      parentCommentUserImageUrl: parentCommentAlias.user_image_url,
+
+      postContent: postsTable.content,
+      postAuthor: postsTable.author,
+      postAuthorId: postsTable.author_id,
+      postUserImageUrl: postsTable.user_image_url,
+      postSlug: postsTable.slug,
+      postLikes: sql/*sql*/ `
+      JSON_BUILD_OBJECT(
+        'likedByCurrentUser', 
+        (
+          SELECT EXISTS(
+            SELECT 1
+            FROM JSONB_ARRAY_ELEMENTS(${postsTable.likes}) AS like_obj
+            WHERE (like_obj->>'author_id') = ${userId}
+          )
+        ),
+        'likesCount', 
+        (
+          SELECT JSONB_ARRAY_LENGTH(${postsTable.likes})
+        )
+      )
+    `,
+      postCreatedAt: postsTable.created_at,
+    })
+    .from(commentsTable)
+    .leftJoin(postsTable, eq(commentsTable.post_id, postsTable.id))
+    .leftJoin(
+      parentCommentAlias,
+      eq(commentsTable.parent_comment_id, parentCommentAlias.id)
+    )
+    .where(
+      searchQuery
+        ? sql`(${commentsTable.author_id} = ${userId}) AND 
+            (${commentsTable.content} ILIKE ${`%${searchQuery}%`} OR 
+             ${commentsTable.author} ILIKE ${`%${searchQuery}%`} OR
+             ${postsTable.content} ILIKE ${`%${searchQuery}%`})`
+        : sql`${commentsTable.author_id} = ${userId}`
+    )
+    .orderBy(desc(commentsTable.created_at))
+    .limit(pageSize)
+    .offset((page - 1) * pageSize);
+
+  const result = commentsQuery.map((row) => ({
+    comment: {
+      id: row.commentId,
+      content: row.commentContent,
+      author: row.commentAuthor,
+      authorId: row.commentAuthorId,
+      likes: row.commentLikes,
+      createdAt: row.commentCreatedAt,
+      userImageUrl: row.commentUserImageUrl,
+    },
+    parentComment: row.parentCommentId
+      ? {
+          id: row.parentCommentId,
+          content: row.parentCommentContent,
+          author: row.parentCommentAuthorName,
+          authorId: row.parentCommentAuthorId,
+          likes: row.parentCommentLikes,
+          createdAt: row.parentCommentCreatedAt,
+          userImageUrl: row.parentCommentUserImageUrl,
+        }
+      : null,
+    post: {
+      id: row.postId,
+      content: row.postContent,
+      author: row.postAuthor,
+      authorId: row.postAuthorId,
+      slug: row.postSlug,
+      likes: row.postLikes,
+      createdAt: row.postCreatedAt,
+      userImageUrl: row.postUserImageUrl,
+    },
+    postId: row.postId,
+  }));
+
+  return result;
+};
+
+export const getTotalOfUserComments = async (userId: string) => {
+  const result = await db
+    .select({
+      count: sql<number>`CAST(COUNT(*) AS INTEGER)`,
+    })
+    .from(commentsTable)
+    .where(eq(commentsTable.author_id, userId));
+  return result;
 };

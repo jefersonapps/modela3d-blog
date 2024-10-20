@@ -30,6 +30,9 @@ export function DeleteComment({ commentId }: DeleteCommentProps) {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["comments"] });
+        queryClient.invalidateQueries({
+          queryKey: ["user-comments-with-parent-and-post"],
+        });
         setOpen(false);
         toast.success("Comentário excluído com sucesso");
       },

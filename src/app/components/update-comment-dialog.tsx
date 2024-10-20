@@ -15,12 +15,14 @@ import { toast } from "sonner";
 
 interface UpdateCommentDialogProps {
   commentId?: string | null;
+  userId?: string;
   currentContent: string;
   onClose: () => void;
 }
 
 export function UpdateCommentDialog({
   commentId,
+  userId,
   currentContent,
   onClose,
 }: UpdateCommentDialogProps) {
@@ -35,7 +37,14 @@ export function UpdateCommentDialog({
         }
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["comments"] });
+        queryClient.invalidateQueries({
+          queryKey: ["comments"],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["user-comments-with-parent-and-post", userId],
+        });
+
         onClose();
         toast.success("Comentário editado com sucesso");
       },

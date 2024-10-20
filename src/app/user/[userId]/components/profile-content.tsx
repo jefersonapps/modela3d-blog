@@ -1,125 +1,74 @@
 "use client";
 
-import { PaginationControls } from "@/app/components/list-posts/pagination-controls";
-import { PostItem } from "@/app/components/post-item";
-import { PostSkeleton } from "@/app/components/skeletons/post-skeleton";
-import { PER_PAGE } from "@/app/constants/constants";
-import { getTotalOfUserPosts } from "@/app/http/get-total-of-user-posts";
-import { getUserPosts } from "@/app/http/get-user-posts";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
-import z from "zod";
+import { ListUserPosts } from "./list-user-posts";
+import { ListUserComments } from "./list-user-comments";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
+const TABS = [
+  {
+    key: "posts",
+    label: "Postagens",
+    component: ListUserPosts,
+  },
+  {
+    key: "comments",
+    label: "Comentários",
+    component: ListUserComments,
+  },
+] as const;
 
 export function ProfileContent({ userId }: { userId: string }) {
-  const searchParams = useSearchParams();
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const getInitialTab = () => {
+    const tabParam = searchParams.get("tab");
+    return TABS.find((tab) => tab.key === tabParam)?.key || "posts";
+  };
 
-  const { data: totalOfPosts, isLoading: isLoadingTotalOfPosts } = useQuery({
-    queryKey: ["totalOfUserPosts", userId],
-    queryFn: () => getTotalOfUserPosts({ userId }),
-    enabled: !!userId,
-    retry: 3,
-    retryDelay: 1000,
-    staleTime: Infinity,
-  });
-  const page = z.coerce.number().parse(searchParams.get("page") ?? "1");
+  const [activeTab, setActiveTab] = useState(getInitialTab);
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-      return params.toString();
-    },
-    [searchParams]
-  );
+  const handleTabClick = (key: (typeof TABS)[number]["key"]) => {
+    setActiveTab(key);
 
-  const { data: posts, isLoading: isLoadingPosts } = useQuery({
-    queryKey: ["user-posts", userId, page, searchQuery],
-    queryFn: () =>
-      getUserPosts({
-        userId: userId,
-        page: page,
-        pageSize: PER_PAGE,
-        searchQuery,
-      }),
-    enabled: !!userId && !!page,
-    retry: 3,
-    retryDelay: 1000,
-    staleTime: Infinity,
-  });
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.set("tab", key);
+    router.push(`?${newParams.toString()}`, { scroll: false });
+  };
 
-  const lastPage = Math.ceil(
-    (totalOfPosts && totalOfPosts[0].count / PER_PAGE) || 1
-  );
+  useEffect(() => {
+    const initialTab = getInitialTab();
+    setActiveTab(initialTab);
+  }, [searchParams]);
 
-  const handleSearchSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (searchInputRef.current) {
-      setSearchQuery(searchInputRef.current.value);
-      router.replace(
-        pathname + "?" + createQueryString("page", (1).toString())
-      );
-    }
+  const renderActiveTabContent = () => {
+    const ActiveComponent = TABS.find(
+      (tab) => tab.key === activeTab
+    )?.component;
+    return ActiveComponent ? <ActiveComponent userId={userId} /> : null;
   };
 
   return (
     <div>
       <div>
         <div className="flex justify-around text-zinc-500">
-          <button className="py-2 px-4 border-b-2 border-blue-500 text-white font-semibold">
-            Postagens
-          </button>
+          {TABS.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => handleTabClick(tab.key)}
+              data-active={activeTab === tab.key}
+              className="py-2 px-4 border-b-2 border-transparent data-[active=true]:border-blue-500 data-[active=true]:text-white font-semibold"
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
       <Separator />
 
-      <div className="space-y-4 mt-4">
-        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-          <div className="relative w-full">
-            <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              ref={searchInputRef}
-              type="search"
-              placeholder="Pesquise por postagens..."
-              className="pl-8 h-11"
-            />
-          </div>
-          <Button type="submit">
-            <span>Buscar</span>
-          </Button>
-        </form>
-        {isLoadingPosts && (
-          <div className="space-y-4">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <PostSkeleton key={i} />
-            ))}
-          </div>
-        )}
-
-        {!isLoadingPosts && (
-          <div className="space-y-4">
-            {posts?.map((post) => (
-              <PostItem key={post.id} post={post} />
-            ))}
-          </div>
-        )}
-
-        <PaginationControls
-          createQueryString={createQueryString}
-          page={page}
-          lastPage={lastPage}
-          isLoadingTotalOfPosts={isLoadingTotalOfPosts}
-        />
-      </div>
+      {renderActiveTabContent()}
     </div>
   );
 }
