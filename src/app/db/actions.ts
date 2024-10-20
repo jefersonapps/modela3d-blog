@@ -183,15 +183,18 @@ export const getSinglePost = async (postId: string, userId: string) => {
 
 export const getPostsOfUser = async ({
   userId,
+  loggedUserId,
   page,
   pageSize,
   searchQuery = "",
 }: {
   userId: string;
+  loggedUserId: string;
   page: number;
   pageSize: number;
   searchQuery?: string | null;
 }) => {
+  console.log("loggedUserId", loggedUserId);
   const posts = await db
     .select({
       id: postsTable.id,
@@ -206,7 +209,7 @@ export const getPostsOfUser = async ({
             SELECT EXISTS(
               SELECT 1
               FROM JSONB_ARRAY_ELEMENTS(${postsTable.likes}) AS like_obj
-              WHERE (like_obj->>'author_id') = ${userId}
+              WHERE (like_obj->>'author_id') = ${loggedUserId}
             )
           ),
           'likesCount', 
@@ -461,11 +464,13 @@ export const updateComment = async (commentId: string, content: string) => {
 
 export const getCommentsWithParentAndPostByUserId = async ({
   userId,
+  loggedUserId,
   page,
   pageSize,
   searchQuery = "",
 }: {
   userId: string;
+  loggedUserId: string;
   page: number;
   pageSize: number;
   searchQuery?: string | null;
@@ -489,7 +494,7 @@ export const getCommentsWithParentAndPostByUserId = async ({
           SELECT EXISTS(
             SELECT 1
             FROM JSONB_ARRAY_ELEMENTS(${commentsTable.likes}) AS like_obj
-            WHERE (like_obj->>'author_id') = ${userId}
+            WHERE (like_obj->>'author_id') = ${loggedUserId}
           )
         ),
         'likesCount', 
@@ -514,7 +519,7 @@ export const getCommentsWithParentAndPostByUserId = async ({
           SELECT EXISTS(
             SELECT 1
             FROM JSONB_ARRAY_ELEMENTS(${parentCommentAlias.likes}) AS like_obj
-            WHERE (like_obj->>'author_id') = ${userId}
+            WHERE (like_obj->>'author_id') = ${loggedUserId}
           )
         ),
         'likesCount', 
@@ -538,7 +543,7 @@ export const getCommentsWithParentAndPostByUserId = async ({
           SELECT EXISTS(
             SELECT 1
             FROM JSONB_ARRAY_ELEMENTS(${postsTable.likes}) AS like_obj
-            WHERE (like_obj->>'author_id') = ${userId}
+            WHERE (like_obj->>'author_id') = ${loggedUserId}
           )
         ),
         'likesCount', 

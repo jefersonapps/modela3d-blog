@@ -14,9 +14,9 @@ export function PostDetails({ postId }: { postId: string }) {
     queryFn: () =>
       getPost({
         postId,
-        userId: user?.id,
+        userId: user?.id || "anonymous",
       }),
-    enabled: !!postId && !!user?.id,
+    enabled: !!postId || !!user?.id,
     staleTime: Infinity,
   });
 

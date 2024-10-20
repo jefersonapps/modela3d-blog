@@ -12,10 +12,12 @@ export async function GET(request: Request) {
   const page = parseInt(url.searchParams.get("page") || "1");
   const pageSize = parseInt(url.searchParams.get("pageSize") || "10");
   const searchQuery = url.searchParams.get("searchQuery") || "";
+  const loggedUserId = url.searchParams.get("loggedUserId");
 
   try {
     const comments = await getCommentsWithParentAndPostByUserId({
       userId,
+      loggedUserId: loggedUserId || "anonymous",
       page,
       pageSize,
       searchQuery,

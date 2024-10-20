@@ -6,6 +6,7 @@ import { getTotalOfUserPosts } from "@/app/http/get-total-of-user-posts";
 import { getUserPosts } from "@/app/http/get-user-posts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -17,6 +18,7 @@ export function ListUserPosts({ userId }: { userId: string }) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useUser();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -40,19 +42,22 @@ export function ListUserPosts({ userId }: { userId: string }) {
   );
 
   const { data: posts, isLoading: isLoadingPosts } = useQuery({
-    queryKey: ["user-posts", userId, page, searchQuery],
+    queryKey: ["user-posts", userId, page, searchQuery, user?.id],
     queryFn: () =>
       getUserPosts({
+        loggedUserId: user?.id || "anonymous",
         userId: userId,
         page: page,
         pageSize: PER_PAGE,
         searchQuery,
       }),
-    enabled: !!userId && !!page,
+    enabled: (!!userId && !!page) || !!user?.id,
     retry: 3,
     retryDelay: 1000,
     staleTime: Infinity,
   });
+
+  console.log(posts);
 
   const lastPage = Math.ceil(
     (totalOfPosts && totalOfPosts[0].count / PER_PAGE) || 1
@@ -91,6 +96,16 @@ export function ListUserPosts({ userId }: { userId: string }) {
         </div>
       )}
 
+      {posts?.length === 0 && (
+        <div className="text-zinc-500 h-40 flex flex-col items-center justify-center leading-relaxed">
+          <p className="text-xl font-bold text-center">
+            {searchQuery === ""
+              ? "Este usuário ainda não fez nenhuma postagem."
+              : "Nenhuma publicação encontrada."}
+          </p>
+        </div>
+      )}
+
       {!isLoadingPosts && (
         <div className="space-y-4">
           {posts?.map((post) => (
@@ -99,12 +114,14 @@ export function ListUserPosts({ userId }: { userId: string }) {
         </div>
       )}
 
-      <PaginationControls
-        createQueryString={createQueryString}
-        page={page}
-        lastPage={lastPage}
-        isLoadingTotalOfPosts={isLoadingTotalOfPosts}
-      />
+      {posts && posts.length > 0 && (
+        <PaginationControls
+          createQueryString={createQueryString}
+          page={page}
+          lastPage={lastPage}
+          isLoadingTotalOfPosts={isLoadingTotalOfPosts}
+        />
+      )}
     </div>
   );
 }

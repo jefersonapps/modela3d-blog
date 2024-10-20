@@ -60,7 +60,8 @@ export function PostBottomActions({
 
   const { data: comments } = useQuery({
     queryKey: ["comments", post.id],
-    queryFn: () => getComments({ postId: post.id, userId: user?.id }),
+    queryFn: () =>
+      getComments({ postId: post.id, userId: user?.id || "anonymous" }),
     enabled: !!post.id,
   });
 

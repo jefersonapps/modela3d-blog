@@ -14,12 +14,14 @@ import { PostItem } from "@/app/components/post-item";
 import { CommentItem } from "@/app/components/comment-item";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
 export function ListUserComments({ userId }: { userId: string }) {
   const searchParams = useSearchParams();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useUser();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -48,15 +50,22 @@ export function ListUserComments({ userId }: { userId: string }) {
 
   // Fetch de comentários do usuário com paginação e busca
   const { data: comments, isLoading: isLoadingComments } = useQuery({
-    queryKey: ["user-comments-with-parent-and-post", userId, page, searchQuery],
+    queryKey: [
+      "user-comments-with-parent-and-post",
+      userId,
+      page,
+      searchQuery,
+      user?.id,
+    ],
     queryFn: () =>
       getUserCommentsWithParentAndPost({
+        loggedUserId: user?.id,
         userId,
         page: page,
         pageSize: PER_PAGE,
         searchQuery,
       }),
-    enabled: !!userId && !!page,
+    enabled: (!!userId && !!page) || !!user?.id,
     retry: 3,
     retryDelay: 1000,
     staleTime: Infinity,
@@ -80,34 +89,32 @@ export function ListUserComments({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-4 mt-4">
+      <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+        <div className="relative w-full">
+          <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            ref={searchInputRef}
+            type="search"
+            placeholder="Pesquise por comentários..."
+            className="pl-8 h-11"
+          />
+        </div>
+        <Button type="submit">
+          <span>Buscar</span>
+        </Button>
+      </form>
       {comments?.length === 0 && (
         <div className="text-zinc-500 h-40 flex flex-col items-center justify-center leading-relaxed">
           <p className="text-xl font-bold text-center">
-            Este usuário ainda não comentou em nenhuma postagem.
+            {searchQuery === ""
+              ? "Este usuário ainda não comentou em nenhuma postagem."
+              : "Comentário não encontrado."}
           </p>
         </div>
       )}
 
       {comments && comments.length > 0 && (
         <>
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex items-center gap-2"
-          >
-            <div className="relative w-full">
-              <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                ref={searchInputRef}
-                type="search"
-                placeholder="Pesquise por comentários..."
-                className="pl-8 h-11"
-              />
-            </div>
-            <Button type="submit">
-              <span>Buscar</span>
-            </Button>
-          </form>
-
           {isLoadingComments && (
             <div className="space-y-4">
               {Array.from({ length: 10 }).map((_, i) => (

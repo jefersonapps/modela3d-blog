@@ -7,6 +7,7 @@ export async function GET(request: Request) {
   const userId = searchParams.get("userId");
   const pageSize = parseInt(searchParams.get("pageSize") || "10");
   const searchQuery = searchParams.get("searchQuery");
+  const loggedUserId = searchParams.get("loggedUserId");
 
   if (!page || !userId || !pageSize) {
     return Response.json(
@@ -17,6 +18,7 @@ export async function GET(request: Request) {
   const post = await getPostsOfUser({
     page,
     userId,
+    loggedUserId: loggedUserId || "anonymous",
     pageSize,
     searchQuery,
   });

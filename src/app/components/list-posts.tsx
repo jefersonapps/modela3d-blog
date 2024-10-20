@@ -167,12 +167,24 @@ export function ListPosts() {
         </div>
       )}
 
-      <PaginationControls
-        createQueryString={createQueryString}
-        page={page}
-        lastPage={lastPage}
-        isLoadingTotalOfPosts={isLoadingTotalOfPosts}
-      />
+      {posts?.length === 0 && (
+        <div className="text-zinc-500 h-40 flex flex-col items-center justify-center leading-relaxed">
+          <p className="text-xl font-bold text-center">
+            {searchQuery === ""
+              ? "Não há publicações recentes."
+              : "Nenhuma publicação encontrada."}
+          </p>
+        </div>
+      )}
+
+      {posts && posts?.length && (
+        <PaginationControls
+          createQueryString={createQueryString}
+          page={page}
+          lastPage={lastPage}
+          isLoadingTotalOfPosts={isLoadingTotalOfPosts}
+        />
+      )}
     </div>
   );
 }

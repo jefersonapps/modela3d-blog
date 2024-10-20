@@ -2,11 +2,13 @@ import { Comment, Post } from "../db/actions";
 
 export async function getUserCommentsWithParentAndPost({
   userId,
+  loggedUserId,
   page = 1,
   pageSize = 10,
   searchQuery = "",
 }: {
   userId: string;
+  loggedUserId?: string;
   page?: number;
   pageSize?: number;
   searchQuery?: string;
@@ -15,6 +17,8 @@ export async function getUserCommentsWithParentAndPost({
   const url = new URL(`/api/comments/user/${userId}`, window.location.origin);
   url.searchParams.append("page", String(page));
   url.searchParams.append("pageSize", String(pageSize));
+  url.searchParams.append("loggedUserId", loggedUserId || "anonymous");
+
   if (searchQuery) {
     url.searchParams.append("searchQuery", searchQuery);
   }
