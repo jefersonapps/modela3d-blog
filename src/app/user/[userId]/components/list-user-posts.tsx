@@ -7,7 +7,7 @@ import { getUserPosts } from "@/app/http/get-user-posts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
@@ -19,6 +19,7 @@ export function ListUserPosts({ userId }: { userId: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useUser();
+  const queryClient = useQueryClient();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -72,6 +73,17 @@ export function ListUserPosts({ userId }: { userId: string }) {
       );
     }
   };
+
+  const resetPosts = () => {
+    setSearchQuery("");
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+    queryClient.invalidateQueries({
+      queryKey: ["user-posts", user?.id, page, userId],
+    });
+  };
+
   return (
     <div className="space-y-4 mt-4">
       <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
@@ -103,6 +115,9 @@ export function ListUserPosts({ userId }: { userId: string }) {
               ? "Este usuário ainda não fez nenhuma postagem."
               : "Nenhuma publicação encontrada."}
           </p>
+          <Button variant="customLink" onClick={() => resetPosts()}>
+            Ver todas as postagens
+          </Button>
         </div>
       )}
 

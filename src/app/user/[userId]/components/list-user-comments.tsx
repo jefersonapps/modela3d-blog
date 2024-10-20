@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import z from "zod";
 import { PostSkeleton } from "@/app/components/skeletons/post-skeleton";
 import { PostItem } from "@/app/components/post-item";
@@ -22,6 +22,7 @@ export function ListUserComments({ userId }: { userId: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useUser();
+  const queryClient = useQueryClient();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -87,6 +88,16 @@ export function ListUserComments({ userId }: { userId: string }) {
     }
   };
 
+  const resetComments = () => {
+    setSearchQuery("");
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+    queryClient.invalidateQueries({
+      queryKey: ["user-comments-with-parent-and-post", userId, page, user?.id],
+    });
+  };
+
   return (
     <div className="space-y-4 mt-4">
       <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
@@ -110,6 +121,9 @@ export function ListUserComments({ userId }: { userId: string }) {
               ? "Este usuário ainda não comentou em nenhuma postagem."
               : "Comentário não encontrado."}
           </p>
+          <Button variant="customLink" onClick={() => resetComments()}>
+            Ver todos os comentários
+          </Button>
         </div>
       )}
 

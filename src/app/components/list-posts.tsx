@@ -3,7 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { PostUserInfo } from "./post-user-info";
 import { ContentPreview } from "./content-preview";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPosts } from "../http/get-posts";
 import { PostSkeleton } from "./skeletons/post-skeleton";
 import { getPostsForUnauthenticatedUser } from "../http/get-posts-for-unauthenticated-user";
@@ -42,6 +42,7 @@ export function ListPosts() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -113,6 +114,16 @@ export function ListPosts() {
     }
   };
 
+  const resetPosts = () => {
+    setSearchQuery("");
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+    queryClient.invalidateQueries({
+      queryKey: ["posts", user?.id, page],
+    });
+  };
+
   return (
     <div className="space-y-4 pt-4">
       {isLoaded && (
@@ -174,10 +185,13 @@ export function ListPosts() {
               ? "Não há publicações recentes."
               : "Nenhuma publicação encontrada."}
           </p>
+          <Button variant="customLink" onClick={() => resetPosts()}>
+            Ver todas as postagens
+          </Button>
         </div>
       )}
 
-      {posts && posts?.length && (
+      {posts && posts?.length > 0 && (
         <PaginationControls
           createQueryString={createQueryString}
           page={page}
