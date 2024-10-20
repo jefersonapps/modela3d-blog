@@ -1,18 +1,35 @@
 ## Modela 3D Blog
 
-<div align="center">
-  <img src="public/assets/screenshot.png" alt="Demonstração da aplicação">
-</div>
-
 ## 🎯 Objetivo
 
 O Modela 3D Blog é uma plataforma interativa onde usuários podem compartilhar suas experiências e conhecimentos relacionados ao mundo da modelagem 3D. Com um sistema de posts, curtidas, comentários e um editor Markdown intuitivo, o blog visa construir uma comunidade engajada e promover a troca de informações entre usuários do software Modela 3D.
+
+## 📸 Demonstração
+
+### Página inicial
+
+<div align="center">
+  <img src="public/assets/screenshot.png" alt="Página inicial da aplicação">
+</div>
+
+### Perfil de usuário
+
+<div align="center">
+  <img src="public/assets/profile.png" alt="Página de perfil do usuário">
+</div>
+
+### Página de comentários de uma postagem
+
+<div align="center">
+  <img src="public/assets/comments.png" alt="Página de comentários de uma postagem">
+</div>
 
 ## ✨ Funcionalidades
 
 - **Autenticação de Usuários:** Acesso seguro e personalizado através da plataforma Clerk.
 - **Criação de Posts:** Publique suas ideias, tutoriais e projetos com um editor Markdown completo.
 - **Feed de Posts:** Explore o feed de posts da comunidade, com paginação para navegação otimizada.
+- **Perfil de Usuário:** Acesse suas postagens, comentários e curtidas ou explore perfis de outros usuários.
 - **Curtidas e Comentários:** Interaja com outros usuários curtindo os posts.
 - **Pesquisa:** Encontre posts e usuários específicos através da barra de pesquisa.
 - **Tema Dark/Light/System:** Personalize sua experiência com a opção de alternar entre os temas claro e escuro.
