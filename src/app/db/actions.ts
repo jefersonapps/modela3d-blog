@@ -24,17 +24,6 @@ export interface Post {
   userImageUrl: string;
 }
 
-export interface UnauthenticatedPosts {
-  id: string;
-  authorId: string;
-  content: string;
-  author: string;
-  slug: string;
-  likes: Omit<Likes, "likedByCurrentUser">;
-  userImageUrl: string;
-  createdAt: Date;
-}
-
 export const createPost = async (post: Post) => {
   try {
     await db.insert(postsTable).values({
@@ -50,38 +39,6 @@ export const createPost = async (post: Post) => {
     console.error("Error executing SQL query:", err);
     throw err;
   }
-};
-
-export const getPostsForUnauthenticatedUser = async ({
-  page,
-  pageSize,
-}: {
-  page: number;
-  pageSize: number;
-}) => {
-  const posts = await db
-    .select({
-      id: postsTable.id,
-      authorId: postsTable.author_id,
-      content: postsTable.content,
-      author: postsTable.author,
-      slug: postsTable.slug,
-      likes: sql<Omit<Likes, "likedByCurrentUser">>/*sql*/ `
-      JSON_BUILD_OBJECT(
-        'likesCount', 
-        (
-          SELECT JSONB_ARRAY_LENGTH(${postsTable.likes})
-        )
-      )
-    `,
-      userImageUrl: postsTable.user_image_url,
-      createdAt: postsTable.created_at,
-    })
-    .from(postsTable)
-    .orderBy(desc(postsTable.created_at))
-    .limit(pageSize)
-    .offset((page - 1) * pageSize);
-  return posts;
 };
 
 export const getTotalOfPosts = async ({

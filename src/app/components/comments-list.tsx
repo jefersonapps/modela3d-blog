@@ -1,7 +1,7 @@
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUser } from "../http/get-user";
-import { Comment, Post, UnauthenticatedPosts } from "../db/actions";
+import { Comment, Post } from "../db/actions";
 import {
   buildCommentTree,
   CommentWithChildren,
@@ -29,7 +29,7 @@ export function CommentsList({
   post,
 }: {
   comments?: Comment[];
-  post: Post | UnauthenticatedPosts;
+  post: Post;
 }) {
   const { isLoaded, user } = useUser();
   const queryClient = useQueryClient();

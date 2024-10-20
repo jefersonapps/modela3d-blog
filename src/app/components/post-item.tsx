@@ -4,13 +4,13 @@ import { PostActions } from "./post-actions";
 import { ContentPreview } from "./content-preview";
 import { Separator } from "@/components/ui/separator";
 import { PostBottomActions } from "./post-bottom-actions";
-import { Post, UnauthenticatedPosts } from "../db/actions";
+import { Post } from "../db/actions";
 
 export function PostItem({
   post,
   detailed,
 }: {
-  post: Post | UnauthenticatedPosts;
+  post: Post;
   detailed?: boolean;
 }) {
   return (

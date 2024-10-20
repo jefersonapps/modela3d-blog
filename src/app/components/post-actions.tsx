@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
-import { Post, UnauthenticatedPosts } from "../db/actions";
+import { Post } from "../db/actions";
 import { UpdatePostDialog } from "./update-post-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,7 @@ import { Edit, Ellipsis } from "lucide-react";
 import { DeletePost } from "./delete-post";
 
 interface PostActionsProps {
-  post: Post | UnauthenticatedPosts;
+  post: Post;
 }
 
 export const PostActions = ({ post }: PostActionsProps) => {

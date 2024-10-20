@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useState } from "react";
-import { Post, UnauthenticatedPosts } from "../db/actions";
+import { Post } from "../db/actions";
 import { Chat, Heart } from "phosphor-react";
 import { toggleLikePost } from "../http/like-post";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ export function PostBottomActions({
   post,
   detailed,
 }: {
-  post: Post | UnauthenticatedPosts;
+  post: Post;
   detailed?: boolean;
 }) {
   const { user } = useUser();

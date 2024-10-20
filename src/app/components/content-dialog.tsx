@@ -12,7 +12,7 @@ import {
 import Image from "next/image";
 import { MarkdownEditor } from "./markdown-editor";
 import { Spinner } from "@/components/spinner";
-import { useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 
 type ContentDialogProps = {
   dialogTitle: string;
@@ -125,8 +125,19 @@ export const CustomContentDialog = ({
   isDialogOpen,
   setIsDialogOpen,
 }: CustomContentDialogProps) => {
+  const { user } = useUser();
+  const { openSignIn } = useClerk();
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!user?.id) {
+      openSignIn();
+    } else {
+      setIsDialogOpen(isOpen);
+    }
+  };
+
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent className="w-full md:max-w-6xl bg-card p-3 md:p-4 rounded-md">

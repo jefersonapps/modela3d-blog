@@ -5,8 +5,6 @@ import { PostUserInfo } from "./post-user-info";
 import { ContentPreview } from "./content-preview";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPosts } from "../http/get-posts";
-import { PostSkeleton } from "./skeletons/post-skeleton";
-import { getPostsForUnauthenticatedUser } from "../http/get-posts-for-unauthenticated-user";
 import { Card } from "@/components/ui/card";
 import { Post } from "../db/actions";
 import { Pin, Search } from "lucide-react";
@@ -73,7 +71,7 @@ export function ListPosts() {
         pageSize: PER_PAGE,
         searchQuery,
       }),
-    enabled: !!user?.id && isLoaded,
+    enabled: true,
     staleTime: Infinity,
   });
 
@@ -86,17 +84,6 @@ export function ListPosts() {
       return createUser(userName, user?.id);
     },
     enabled: !!user?.id && isLoaded,
-    staleTime: Infinity,
-  });
-
-  const {
-    data: postsForUnauthenticatedUser,
-    isLoading: isLoadingUnauthenticatedPosts,
-  } = useQuery({
-    queryKey: ["postsForUnauthenticatedUser", page],
-    queryFn: () =>
-      getPostsForUnauthenticatedUser({ page: page, pageSize: PER_PAGE }),
-    enabled: !user?.id && isLoaded,
     staleTime: Infinity,
   });
 
@@ -152,27 +139,10 @@ export function ListPosts() {
           <span>Buscar</span>
         </Button>
       </form>
-      {(isLoadingPosts || isLoadingUnauthenticatedPosts || !isLoaded) && (
-        <div className="space-y-4">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <PostSkeleton key={i} />
-          ))}
-        </div>
-      )}
 
-      {/* Renderizar posts de usuários autenticados */}
-      {!isLoadingPosts && isLoaded && user?.id && (
+      {!isLoadingPosts && (
         <div className="space-y-4">
           {posts?.map((post) => (
-            <PostItem key={post.id} post={post} />
-          ))}
-        </div>
-      )}
-
-      {/* Renderizar posts para usuários não autenticados */}
-      {!isLoadingUnauthenticatedPosts && isLoaded && !user?.id && (
-        <div className="space-y-4">
-          {postsForUnauthenticatedUser?.map((post) => (
             <PostItem key={post.id} post={post} />
           ))}
         </div>

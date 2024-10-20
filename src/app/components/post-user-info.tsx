@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Post, UnauthenticatedPosts } from "../db/actions";
+import { Post } from "../db/actions";
 import { formatDateString } from "../utils/helpers";
 import z from "zod";
 import Link from "next/link";
@@ -7,7 +7,7 @@ import Link from "next/link";
 const emailSchema = z.string().email();
 
 interface PostUserInfoProps {
-  post: Post | UnauthenticatedPosts;
+  post: Post;
 }
 
 export function PostUserInfo({ post }: PostUserInfoProps) {
