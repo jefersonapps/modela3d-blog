@@ -1,7 +1,7 @@
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "./drizzle";
 import { commentsTable, postsTable, usersTable } from "./schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, ilike, or, sql } from "drizzle-orm";
 
 interface Like {
   author_id: string;
@@ -84,12 +84,22 @@ export const getPostsForUnauthenticatedUser = async ({
   return posts;
 };
 
-export const getTotalOfPosts = async () => {
+export const getTotalOfPosts = async ({
+  searchQuery = "",
+}: {
+  searchQuery?: string;
+}) => {
   const result = await db
     .select({
       count: sql<number>`CAST(COUNT(*) AS INTEGER)`,
     })
-    .from(postsTable);
+    .from(postsTable)
+    .where(
+      or(
+        ilike(postsTable.content, `%${searchQuery}%`),
+        ilike(postsTable.author, `%${searchQuery}%`)
+      )
+    );
   return result;
 };
 
@@ -236,13 +246,26 @@ export const getPostsOfUser = async ({
   return posts;
 };
 
-export const getTotalOfUserPosts = async (userId: string) => {
+export const getTotalOfUserPosts = async ({
+  userId,
+  searchQuery,
+}: {
+  userId: string;
+  searchQuery?: string;
+}) => {
   const result = await db
     .select({
       count: sql<number>`CAST(COUNT(*) AS INTEGER)`,
     })
     .from(postsTable)
-    .where(eq(postsTable.author_id, userId));
+    .where(
+      searchQuery
+        ? sql`(${postsTable.author_id} = ${userId}) AND 
+              (${postsTable.content} ILIKE ${"%" + searchQuery + "%"} OR 
+               ${postsTable.author} ILIKE ${"%" + searchQuery + "%"})`
+        : sql`${postsTable.author_id} = ${userId}`
+    );
+
   return result;
 };
 
@@ -609,12 +632,24 @@ export const getCommentsWithParentAndPostByUserId = async ({
   return result;
 };
 
-export const getTotalOfUserComments = async (userId: string) => {
+export const getTotalOfUserComments = async ({
+  userId,
+  searchQuery = "",
+}: {
+  userId: string;
+  searchQuery?: string;
+}) => {
   const result = await db
     .select({
       count: sql<number>`CAST(COUNT(*) AS INTEGER)`,
     })
     .from(commentsTable)
-    .where(eq(commentsTable.author_id, userId));
+    .where(
+      searchQuery
+        ? sql`(${commentsTable.author_id} = ${userId}) AND 
+              (${commentsTable.content} ILIKE ${"%" + searchQuery + "%"})`
+        : sql`${commentsTable.author_id} = ${userId}`
+    );
+
   return result;
 };

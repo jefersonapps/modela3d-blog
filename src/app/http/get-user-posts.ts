@@ -13,7 +13,6 @@ export async function getUserPosts({
   pageSize?: number;
   searchQuery?: string | null;
 }): Promise<Post[] | null> {
-  console.log("loggedUserId", loggedUserId);
   if (!userId || !page || !pageSize) {
     console.warn("No userId or page or pageSize provided.");
     return null;

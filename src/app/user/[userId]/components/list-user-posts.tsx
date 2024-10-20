@@ -24,13 +24,14 @@ export function ListUserPosts({ userId }: { userId: string }) {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const { data: totalOfPosts, isLoading: isLoadingTotalOfPosts } = useQuery({
-    queryKey: ["totalOfUserPosts", userId],
-    queryFn: () => getTotalOfUserPosts({ userId }),
-    enabled: !!userId,
+    queryKey: ["totalOfUserPosts", userId, searchQuery],
+    queryFn: () => getTotalOfUserPosts({ userId, searchQuery }),
+    enabled: !!userId || !!searchQuery,
     retry: 3,
     retryDelay: 1000,
     staleTime: Infinity,
   });
+
   const page = z.coerce.number().parse(searchParams.get("page") ?? "1");
 
   const createQueryString = useCallback(
@@ -57,8 +58,6 @@ export function ListUserPosts({ userId }: { userId: string }) {
     retryDelay: 1000,
     staleTime: Infinity,
   });
-
-  console.log(posts);
 
   const lastPage = Math.ceil(
     (totalOfPosts && totalOfPosts[0].count / PER_PAGE) || 1

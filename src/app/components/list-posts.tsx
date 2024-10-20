@@ -47,8 +47,8 @@ export function ListPosts() {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const { data: totalOfPosts, isLoading: isLoadingTotalOfPosts } = useQuery({
-    queryKey: ["totalOfPosts"],
-    queryFn: () => getTotalOfPosts(),
+    queryKey: ["totalOfPosts", searchQuery],
+    queryFn: () => getTotalOfPosts({ searchQuery }),
     enabled: true,
     staleTime: Infinity,
   });

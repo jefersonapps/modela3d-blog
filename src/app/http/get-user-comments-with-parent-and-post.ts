@@ -13,7 +13,6 @@ export async function getUserCommentsWithParentAndPost({
   pageSize?: number;
   searchQuery?: string;
 }) {
-  console.log("fez o fetch");
   const url = new URL(`/api/comments/user/${userId}`, window.location.origin);
   url.searchParams.append("page", String(page));
   url.searchParams.append("pageSize", String(pageSize));

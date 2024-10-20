@@ -26,11 +26,10 @@ export function ListUserComments({ userId }: { userId: string }) {
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Total de comentários do usuário
   const { data: totalOfComments, isLoading: isLoadingTotalOfComments } =
     useQuery({
-      queryKey: ["totalOfUserComments", userId],
-      queryFn: () => getTotalOfUserComments({ userId }),
+      queryKey: ["totalOfUserComments", userId, searchQuery],
+      queryFn: () => getTotalOfUserComments({ userId, searchQuery }),
       enabled: !!userId,
       retry: 3,
       retryDelay: 1000,
@@ -39,7 +38,6 @@ export function ListUserComments({ userId }: { userId: string }) {
 
   const page = z.coerce.number().parse(searchParams.get("page") ?? "1");
 
-  // Função para criar query string para paginação
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -49,7 +47,6 @@ export function ListUserComments({ userId }: { userId: string }) {
     [searchParams]
   );
 
-  // Fetch de comentários do usuário com paginação e busca
   const { data: comments, isLoading: isLoadingComments } = useQuery({
     queryKey: [
       "user-comments-with-parent-and-post",
@@ -71,8 +68,6 @@ export function ListUserComments({ userId }: { userId: string }) {
     retryDelay: 1000,
     staleTime: Infinity,
   });
-
-  console.log(comments);
 
   const lastPage = Math.ceil(
     (totalOfComments && totalOfComments[0].count / PER_PAGE) || 1
