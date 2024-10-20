@@ -13,6 +13,7 @@ import Image from "next/image";
 import { MarkdownEditor } from "./markdown-editor";
 import { Spinner } from "@/components/spinner";
 import { useClerk, useUser } from "@clerk/nextjs";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ContentDialogProps = {
   dialogTitle: string;
@@ -97,6 +98,12 @@ export const ContentDialog = ({
             </Dialog>
           </Card>
         </div>
+      )}
+      {(!isLoaded || !user?.id) && (
+        <Card className="bg-white dark:bg-zinc-900 p-4 rounded-md flex items-center gap-4">
+          <Skeleton className="size-10 rounded-full" />
+          <Skeleton className="h-10 w-full" />
+        </Card>
       )}
     </>
   );

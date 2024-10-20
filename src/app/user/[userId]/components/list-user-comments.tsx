@@ -122,73 +122,71 @@ export function ListUserComments({ userId }: { userId: string }) {
         </div>
       )}
 
-      {comments && comments.length > 0 && (
-        <>
-          {isLoadingComments && (
-            <div className="space-y-4">
-              {Array.from({ length: 10 }).map((_, i) => (
-                <PostSkeleton key={i} />
-              ))}
-            </div>
-          )}
+      {isLoadingComments && (
+        <div className="space-y-4">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <PostSkeleton key={i} />
+          ))}
+        </div>
+      )}
 
-          {!isLoadingComments && (
-            <div className="space-y-4">
-              {comments?.map((comment) => {
-                return (
-                  <div key={comment.comment.id}>
-                    <PostItem post={comment.post} />
-                    <div className="h-10 border-l-2 border-zinc-400 dark:border-zinc-600 flex items-center px-4 ml-[31px]">
-                      <Link
-                        href={`${origin}/post/${comment.postId}`}
-                        className="text-[#2d8cf0]"
-                      >
-                        Ver todos os comentários
-                      </Link>
-                    </div>
-                    <Card className="px-4 bg-white dark:bg-zinc-900">
-                      {comment.parentComment && (
-                        <>
-                          <CommentItem
-                            key={comment.parentComment.id}
-                            comment={comment.parentComment}
-                            userId={userId}
-                            userImageUrl={comment.parentComment.userImageUrl}
-                            displayName={comment.parentComment.author}
-                          />
-                          <div className="flex gap-2 pl-0">
-                            <div className="flex items-center justify-center">
-                              <div className="h-px w-5 bg-white"></div>
-                            </div>
-                            Resposta
-                          </div>
-                        </>
-                      )}
-                      <div
-                        data-should-indent={!!comment.parentComment}
-                        className="data-[should-indent=true]:pl-7"
-                      >
-                        <CommentItem
-                          key={comment.comment.id}
-                          comment={comment.comment}
-                          userId={userId}
-                          displayName={comment.comment.author}
-                        />
+      {!isLoadingComments && (
+        <div className="space-y-4">
+          {comments?.map((comment) => {
+            return (
+              <div key={comment.comment.id}>
+                <PostItem post={comment.post} />
+                <div className="h-10 border-l-2 border-zinc-400 dark:border-zinc-600 flex items-center px-4 ml-[31px]">
+                  <Link
+                    href={`${origin}/post/${comment.postId}`}
+                    className="text-[#2d8cf0]"
+                  >
+                    Ver todos os comentários
+                  </Link>
+                </div>
+                <Card className="px-4 bg-white dark:bg-zinc-900">
+                  {comment.parentComment && (
+                    <>
+                      <CommentItem
+                        key={comment.parentComment.id}
+                        comment={comment.parentComment}
+                        userId={userId}
+                        userImageUrl={comment.parentComment.userImageUrl}
+                        displayName={comment.parentComment.author}
+                      />
+                      <div className="flex gap-2 pl-0">
+                        <div className="flex items-center justify-center">
+                          <div className="h-px w-5 bg-white"></div>
+                        </div>
+                        Resposta
                       </div>
-                    </Card>
+                    </>
+                  )}
+                  <div
+                    data-should-indent={!!comment.parentComment}
+                    className="data-[should-indent=true]:pl-7"
+                  >
+                    <CommentItem
+                      key={comment.comment.id}
+                      comment={comment.comment}
+                      userId={userId}
+                      displayName={comment.comment.author}
+                    />
                   </div>
-                );
-              })}
-            </div>
-          )}
+                </Card>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-          <PaginationControls
-            createQueryString={createQueryString}
-            page={page}
-            lastPage={lastPage}
-            isLoadingTotalOfPosts={isLoadingTotalOfComments}
-          />
-        </>
+      {comments && comments.length > 0 && (
+        <PaginationControls
+          createQueryString={createQueryString}
+          page={page}
+          lastPage={lastPage}
+          isLoadingTotalOfPosts={isLoadingTotalOfComments}
+        />
       )}
     </div>
   );

@@ -18,15 +18,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PostItem } from "./post-item";
 import { PER_PAGE } from "../constants/constants";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PostSkeleton } from "./skeletons/post-skeleton";
 
 const fixedPost: Post = {
   id: "fixed-post",
   author: "Jeferson Leite",
-  authorId: "fixed-author",
+  authorId: "user_2m4QjJwzcIB9aSLIOl2ipvehLkV",
   content:
     "🚀 Bem-vindo ao blog do **Modela 3D!** Compartilhe experiências, publique ***trechos de código*** e ***curta*** os posts da comunidade. Vamos criar juntos! 🎉",
   slug: "fixed-post",
-  userImageUrl: "https://github.com/jefersonapps.png",
+  userImageUrl:
+    "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ybTRRalFZOTJLVmtOR3V1QjV2cWVQRGtVMTcifQ",
   createdAt: null,
   likes: {
     likedByCurrentUser: false,
@@ -113,7 +116,7 @@ export function ListPosts() {
 
   return (
     <div className="space-y-4 pt-4">
-      {isLoaded && (
+      {isLoaded ? (
         <Card className="space-y-2 bg-white dark:bg-zinc-900 p-4 rounded-md border-t-4 border-t-emerald-400 dark:border-t-emerald-700">
           <div className="flex justify-between">
             <PostUserInfo post={{ ...fixedPost, createdAt: new Date() }} />
@@ -124,6 +127,17 @@ export function ListPosts() {
           </div>
           <ContentPreview post={fixedPost} />
         </Card>
+      ) : (
+        <div className="space-y-2 h-[126.59px] bg-white dark:bg-zinc-900 p-4 rounded-md">
+          <div className="flex gap-4">
+            <Skeleton className="size-10 rounded-full" />
+            <div className="space-y-1">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 w-52" />
+            </div>
+          </div>
+          <Skeleton className="h-12 w-full" />
+        </div>
       )}
       <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
         <div className="relative w-full">
@@ -139,6 +153,14 @@ export function ListPosts() {
           <span>Buscar</span>
         </Button>
       </form>
+
+      {isLoadingPosts && (
+        <div className="space-y-4">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <PostSkeleton key={i} />
+          ))}
+        </div>
+      )}
 
       {!isLoadingPosts && (
         <div className="space-y-4">
