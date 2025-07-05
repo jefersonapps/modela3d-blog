@@ -13,6 +13,13 @@ const nextConfig = {
     ],
   },
   swcMinify: false,
+  redirects: async () => [
+    {
+      source: "/",
+      destination: "https://modela3d.vercel.app/blog",
+      permanent: true,
+    },
+  ],
 };
 
 export default nextConfig;
